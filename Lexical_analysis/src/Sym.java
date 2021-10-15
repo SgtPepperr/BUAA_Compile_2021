@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Sym {
+    private int line = 1;
     private String source_string;
     private char[] source_char;
     private char[] prech;
     private String preprocess_string;
-    private ArrayList<String> words = new ArrayList<>();
-    private ArrayList<Integer> symbolnumber = new ArrayList<>();
+    private ArrayList<Word> words = new ArrayList<>();
     private HashMap<String, Integer> resword;
     private HashMap<Character, Integer> extword;
     private String[] symbol;
@@ -28,8 +28,9 @@ public class Sym {
 
         //词法分析调试模块
         for (int i = 0; i < words.size(); i++) {
-            System.out.print(Symbol.values()[symbolnumber.get(i)]);
-            System.out.print(' ' + words.get(i) + '\n');
+            System.out.print(Symbol.values()[words.get(i).getSymnumber()]);
+            System.out.print(' ' + words.get(i).getContent()+'\n');
+//            System.out.print(" " + words.get(i).getLine());
         }
     }
 
@@ -45,9 +46,12 @@ public class Sym {
                 }
             }
             //多行注释处理
-            if (array[i] == '/' && array[i + 1] == '*') {
+            else if (array[i] == '/' && array[i + 1] == '*') {
                 i += 2;
                 while (array[i] != '*' || array[i + 1] != '/') {
+                    if(array[i]=='\n'){
+                        temp[index++]='\n';
+                    }
                     i++;
                 }
                 i++;
@@ -55,15 +59,15 @@ public class Sym {
                 continue;
             }
             //标准表达式内特殊处理
-            if (array[i] == '"') {
+            else if (array[i] == '"') {
                 temp[index++] = array[i++];
                 while (array[i] != '"') {
                     temp[index++] = array[i++];
                 }
             }
 
-            //跳过空字符
-            if (array[i] != '\n' && array[i] != '\r') {
+            //跳过空字符,同时保留换行符用来记录行数
+            if ( array[i] != '\r') {
                 temp[index++] = array[i];
             }
         }
@@ -119,8 +123,10 @@ public class Sym {
         int index = 0;
         int last = 0;
         while (prech[index] != '$') {
-
-            while (prech[index] == ' ' || prech[index] == '\t') {
+            //跳过空字符
+            while (prech[index] == ' ' || prech[index] == '\t'||prech[index]=='\n') {
+                if(prech[index]=='\n')
+                    line++;
                 index++;
             }
             //注意字符是否需要转义
@@ -130,11 +136,10 @@ public class Sym {
                     last++;
                 }
                 String s = preprocess_string.substring(index, last);
-                words.add(s);
                 if (resword.containsKey(s)) {
-                    symbolnumber.add(resword.get(s));
+                    words.add(new Word(resword.get(s), s, line));
                 } else {
-                    symbolnumber.add(1);
+                    words.add(new Word(1, s, line));
                 }
                 index = last;
             } else if (Character.isDigit(prech[index])) {      //注意可能会有对前导0的特判
@@ -142,21 +147,18 @@ public class Sym {
                 while (Character.isDigit(prech[last])) {
                     last++;
                 }
-                words.add(preprocess_string.substring(index, last));
-                symbolnumber.add(2);
+                words.add(new Word(2, preprocess_string.substring(index, last), line));
                 index = last;
             } else if (prech[index] == '"') {
                 last = index + 1;
                 while (prech[last++] != '"') {
                     continue;
                 }
-                words.add(preprocess_string.substring(index, last));
-                symbolnumber.add(3);
+                words.add(new Word(3, preprocess_string.substring(index, last), line));
                 index = last;
             } else if (prech[index] == '&') {
                 if (prech[index + 1] == '&') {
-                    words.add("&&");
-                    symbolnumber.add(12);
+                    words.add(new Word(12, "&&", line));
                     index += 2;
                 } else {
                     System.out.println("&wrong");
@@ -164,18 +166,15 @@ public class Sym {
                 }
             } else if (prech[index] == '!') {
                 if (prech[index + 1] == '=') {
-                    words.add("!=");
-                    symbolnumber.add(29);
+                    words.add(new Word(29, "!=", line));
                     index += 2;
                 } else {
-                    words.add("!");
-                    symbolnumber.add(11);
+                    words.add(new Word(11, "!", line));
                     index++;
                 }
             } else if (prech[index] == '|') {
                 if (prech[index + 1] == '|') {
-                    words.add("||");
-                    symbolnumber.add(13);
+                    words.add(new Word(13, "||", line));
                     index += 2;
                 } else {
                     System.out.println("|wrong");
@@ -183,32 +182,26 @@ public class Sym {
                 }
             } else if (prech[index] == '<') {
                 if (prech[index + 1] == '=') {
-                    words.add("<=");
-                    symbolnumber.add(25);
+                    words.add(new Word(25, "<=", line));
                     index += 2;
                 } else {
-                    words.add("<");
-                    symbolnumber.add(24);
+                    words.add(new Word(24, "<", line));
                     index++;
                 }
             } else if (prech[index] == '>') {
                 if (prech[index + 1] == '=') {
-                    words.add(">=");
-                    symbolnumber.add(27);
+                    words.add(new Word(27, ">=", line));
                     index += 2;
                 } else {
-                    words.add(">");
-                    symbolnumber.add(26);
+                    words.add(new Word(26, ">", line));
                     index++;
                 }
             } else if (prech[index] == '=') {
                 if (prech[index + 1] == '=') {
-                    words.add("==");
-                    symbolnumber.add(28);
+                    words.add(new Word(28, "==", line));
                     index += 2;
                 } else {
-                    words.add("=");
-                    symbolnumber.add(30);
+                    words.add(new Word(30, "=", line));
                     index++;
                 }
             } else if (prech[index] == '[' || prech[index] == ']' || prech[index] == '{' ||
@@ -216,8 +209,7 @@ public class Sym {
                     prech[index] == ',' || prech[index] == ';' || prech[index] == '%' ||
                     prech[index] == '+' || prech[index] == '*' || prech[index] == '/' || prech[index] == '-'
             ) {
-                words.add(String.valueOf(prech[index]));
-                symbolnumber.add(extword.get(prech[index]));
+                words.add(new Word(extword.get(prech[index]), String.valueOf(prech[index]), line));
                 index++;
             } else if (prech[index] == '$') {
                 break;
