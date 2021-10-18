@@ -1,7 +1,4 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 public class Compiler {
 
@@ -18,6 +15,7 @@ public class Compiler {
         reader.close();
         is.close();
     }
+
 
     public static void main(String[] args) {
 //        String inputpath = "D:\\compile\\Lexical_analysis\\src\\testfile.txt";
@@ -49,6 +47,7 @@ public class Compiler {
         System.setOut(out);
 
         Sym sym=new Sym(source);
+        Parsing parsing=new Parsing(sym.getWords());
 
 //        try {
 //            Scanner in = new Scanner(new FileReader(inputpath));

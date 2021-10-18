@@ -3,21 +3,21 @@ import java.util.HashMap;
 
 public class Sym {
     private int line = 1;
-    private String source_string;
+    private final String source_string;
     private char[] source_char;
     private char[] prech;
     private String preprocess_string;
     private ArrayList<Word> words = new ArrayList<>();
     private HashMap<String, Integer> resword;
     private HashMap<Character, Integer> extword;
-    private String[] symbol;
+//    private String[] symbol;
 
-    private enum Symbol {
-        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
-        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
-        MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
-        RBRACK, LBRACE, RBRACE;
-    }
+//    private enum Symbol {
+//        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
+//        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
+//        MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
+//        RBRACK, LBRACE, RBRACE;
+//    }
 
     public Sym(String s) {
         initi();
@@ -27,13 +27,16 @@ public class Sym {
         getsym();
 
         //词法分析调试模块
-        for (int i = 0; i < words.size(); i++) {
-            System.out.print(Symbol.values()[words.get(i).getSymnumber()]);
-            System.out.print(' ' + words.get(i).getContent()+'\n');
-//            System.out.print(" " + words.get(i).getLine());
-        }
+//        for (int i = 0; i < words.size(); i++) {
+//            System.out.print(Symbol.values()[words.get(i).getSymnumber()]);
+//            System.out.print(' ' + words.get(i).getContent()+'\n');
+////            System.out.print(" " + words.get(i).getLine());
+//        }
     }
 
+    public ArrayList<Word> getWords() {
+        return words;
+    }
 
     public void Preprocess(char[] array) {   //预处理部分
         char[] temp = new char[array.length + 1];
@@ -77,9 +80,7 @@ public class Sym {
 
         //截取处理完可用字符串部分
         char[] overpre = new char[index];
-        for (int i = 0; i < index; i++) {
-            overpre[i] = temp[i];
-        }
+        if (index >= 0) System.arraycopy(temp, 0, overpre, 0, index);
         this.prech = overpre;
         this.preprocess_string = new String(prech);
 
@@ -136,11 +137,12 @@ public class Sym {
                     last++;
                 }
                 String s = preprocess_string.substring(index, last);
-                if (resword.containsKey(s)) {
-                    words.add(new Word(resword.get(s), s, line));
-                } else {
-                    words.add(new Word(1, s, line));
-                }
+//                if (resword.containsKey(s)) {
+//                    words.add(new Word(resword.get(s), s, line));
+//                } else {
+//                    words.add(new Word(1, s, line));
+//                }
+                words.add(new Word(resword.getOrDefault(s,1),s,line));
                 index = last;
             } else if (Character.isDigit(prech[index])) {      //注意可能会有对前导0的特判
                 last = index;
