@@ -1,3 +1,6 @@
+import Word.Word;
+import Word.FormatWord;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -138,9 +141,9 @@ public class Sym {
                 }
                 String s = preprocess_string.substring(index, last);
 //                if (resword.containsKey(s)) {
-//                    words.add(new Word(resword.get(s), s, line));
+//                    words.add(new Word.Word(resword.get(s), s, line));
 //                } else {
-//                    words.add(new Word(1, s, line));
+//                    words.add(new Word.Word(1, s, line));
 //                }
                 words.add(new Word(resword.getOrDefault(s,1),s,line));
                 index = last;
@@ -152,12 +155,28 @@ public class Sym {
                 words.add(new Word(2, preprocess_string.substring(index, last), line));
                 index = last;
             } else if (prech[index] == '"') {
+                int count=0;
+                boolean flag=true;
                 last = index + 1;
-                while (prech[last++] != '"') {
-                    continue;
+                while (prech[last] != '"') {
+                    if(prech[last]=='\\'){
+                        if(prech[last+1]!='n')
+                            flag=false;
+                    }else if(prech[last]=='%'){
+                        if(prech[last+1]=='d'){
+                            count++;
+                        }else {
+                            flag=false;
+                        }
+                    }else if(prech[last]==32||prech[last]==33||prech[last]>=40&&prech[last]<=126){
+                        continue;
+                    }else{
+                        flag=false;
+                    }
+                   last++;
                 }
-                words.add(new Word(3, preprocess_string.substring(index, last), line));
-                index = last;
+                words.add(new FormatWord(3, preprocess_string.substring(index, last), line,count,flag));
+                index = last+1;
             } else if (prech[index] == '&') {
                 if (prech[index + 1] == '&') {
                     words.add(new Word(12, "&&", line));

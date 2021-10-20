@@ -1,3 +1,5 @@
+package Word;
+
 public class Word {
     private final int symnumber;
     private final String content;

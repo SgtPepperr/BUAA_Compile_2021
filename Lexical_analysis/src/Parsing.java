@@ -4,6 +4,8 @@ import Symbol_table.Symbols.ArraySymbol;
 import Symbol_table.Symbols.FuncSymbol;
 import Symbol_table.Symbols.NorSymbol;
 import Symbol_table.Symbols.VarSymbol;
+import Word.Word;
+import Word.FormatWord;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,8 @@ public class Parsing {
     private int index = 0;
     private FuncTable functable=new FuncTable();
     private IntergerTable inttable=new IntergerTable();
+    private int errorarray[][]=new int[100][2];
+    private int errorcount=0;
 
     public Parsing(ArrayList<Word> words) {
         this.words = words;
@@ -60,6 +64,8 @@ public class Parsing {
 
     private void errordeal(int type,int line){
             System.out.print(line+" "+(char)('a'+type)+"\n");
+            errorarray[errorcount][0]=line;
+            errorarray[errorcount++][1]=type;
     }
 
 //    private void output() {
@@ -410,12 +416,23 @@ public class Parsing {
                     error();
             }
         }else if(showWord().getContent().equals("printf")){
-            getWord();
+            int symnum=0;
+            Word w1=getWord();
+            int count1=w1.getLine();
+
             if(!getWord().getContent().equals("("))
                 error();
-            if(getWord().getSymnumber()!=3)
-                error();
+
+            FormatWord w2=(FormatWord)getWord();
+            int count2=w2.getLine();
+            boolean correct=w2.isCorrect();
+            int num=w2.getNum();
+
+            if(correct==false)
+                errordeal(0,count2);                            //a类错误
+
             while (showWord().getContent().equals(",")){
+                symnum++;
                 getWord();
                 Exp();
             }
@@ -423,6 +440,10 @@ public class Parsing {
                 error();
             if(!getWord().getContent().equals(";"))
                 error();
+
+            if(num!=symnum)                                           //l类错误
+                errordeal(11,count1);
+
         }else if(showWord().getContent().equals(";")){
             getWord();
         }else if(showWord().getSymnumber()==1){
@@ -492,8 +513,23 @@ public class Parsing {
     }
 
     private void LVal() {
-        if (getWord().getSymnumber() != 1)
+        Word w=getWord();
+        String name=w.getContent();
+        int line=w.getLine();
+        int flag=0;
+        if (w.getSymnumber() != 1)
             error();
+
+        while (inttable.getOut()!=null){                      //未定义名字c类错误
+            if (inttable.contains(name)){
+                flag=1;
+                break;
+            }
+            inttable=inttable.getOut();
+        }
+        if(flag==0)
+            errordeal(2,line);
+
         while (showWord().getContent().equals("[")) {
             getWord();
             Exp();
@@ -531,7 +567,14 @@ public class Parsing {
     private void UnaryExp() {
         String s = showWord().getContent();
         if (showWord().getSymnumber() == 1 && showWord(index + 1).getContent().equals("(")) {
-            getWord();
+
+            Word w=getWord();                             //错误处理c类
+            String name=w.getContent();
+            int line=w.getLine();
+            int flag=0;
+            if(!functable.contains(name))
+                errordeal(2,line);
+
             getWord();
             if (showWord().getContent().equals(")")) {
                 getWord();
