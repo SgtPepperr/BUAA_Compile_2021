@@ -22,8 +22,8 @@ public class Parsing {
 
     private Word getWord() {
         if(index<words.size()) {
-            System.out.print(Parsing.Symbol.values()[words.get(index).getSymnumber()]);
-            System.out.print(' ' + words.get(index).getContent() + '\n');
+//            System.out.print(Parsing.Symbol.values()[words.get(index).getSymnumber()]);
+//            System.out.print(' ' + words.get(index).getContent() + '\n');
             return words.get(index++);
         }else {
             return new Word();
@@ -60,7 +60,7 @@ public class Parsing {
         while (!showWord(index+1).getContent().equals("main"))
             FuncDef();
         MainFuncDef();
-        System.out.print("<CompUnit>\n");
+//        System.out.print("<CompUnit>\n");
     }
 
     private void Decl() {
@@ -86,7 +86,7 @@ public class Parsing {
         } else {
             error();
         }
-        System.out.print("<ConstDecl>\n");
+//        System.out.print("<ConstDecl>\n");
     }
 
     private void BType() {
@@ -113,7 +113,7 @@ public class Parsing {
             error();
         }
 
-        System.out.print("<ConstDef>\n");
+//        System.out.print("<ConstDef>\n");
     }
 
     private void ConstInitVal() {
@@ -134,7 +134,7 @@ public class Parsing {
         } else{
             ConstExp();
         }
-        System.out.print("<ConstInitVal>\n");
+//        System.out.print("<ConstInitVal>\n");
     }
 
     private void VarDecl() {
@@ -147,7 +147,7 @@ public class Parsing {
         if (!getWord().getContent().equals(";")) {
             error();
         }
-        System.out.print("<VarDecl>\n");
+//        System.out.print("<VarDecl>\n");
     }
 
     private void VarDef() {
@@ -166,7 +166,7 @@ public class Parsing {
         } else {
             error();
         }
-        System.out.print("<VarDef>\n");
+//        System.out.print("<VarDef>\n");
     }
 
     private void InitVal() {
@@ -187,7 +187,7 @@ public class Parsing {
         }else{
             Exp();
         }
-        System.out.print("<InitVal>\n");
+//        System.out.print("<InitVal>\n");
     }
 
     private void FuncDef() {
@@ -208,7 +208,7 @@ public class Parsing {
             }
             Block();
         }
-        System.out.print("<FuncDef>\n");
+//        System.out.print("<FuncDef>\n");
     }
 
     private void MainFuncDef() {                         //在预判的时候就会确定符合要求，不进行每个的特殊处理
@@ -217,14 +217,14 @@ public class Parsing {
         getWord();
         getWord();
         Block();
-        System.out.print("<MainFuncDef>\n");
+//        System.out.print("<MainFuncDef>\n");
     }
 
     private void FuncType() {
         String s = getWord().getContent();
         if (!s.equals( "void") && !s.equals( "int"))
             error();
-        System.out.print("<FuncType>\n");
+//        System.out.print("<FuncType>\n");
     }
 
     private void FuncFParams() {
@@ -233,7 +233,7 @@ public class Parsing {
             getWord();
             FuncFParam();
         }
-        System.out.print("<FuncFParams>\n");
+//        System.out.print("<FuncFParams>\n");
     }
 
     private void FuncFParam() {
@@ -251,7 +251,7 @@ public class Parsing {
                     error();
             }
         }
-        System.out.print("<FuncFParam>\n");
+//        System.out.print("<FuncFParam>\n");
     }
 
     private void Block() {
@@ -267,7 +267,7 @@ public class Parsing {
             }
             getWord();
         }
-        System.out.print("<Block>\n");
+//        System.out.print("<Block>\n");
     }
 
     private void BlockItem() {
@@ -385,17 +385,17 @@ public class Parsing {
             if(!getWord().getContent().equals(";"))
                 error();
         }
-        System.out.print("<Stmt>\n");
+//        System.out.print("<Stmt>\n");
     }
 
     private void Exp() {
         AddExp();
-        System.out.print("<Exp>\n");
+//        System.out.print("<Exp>\n");
     }
 
     private void Cond() {
         LOrExp();
-        System.out.print("<Cond>\n");
+//        System.out.print("<Cond>\n");
     }
 
     private void LVal() {
@@ -408,7 +408,7 @@ public class Parsing {
                 error();
             }
         }
-        System.out.print("<LVal>\n");
+//        System.out.print("<LVal>\n");
     }
 
     private void PrimaryExp() {
@@ -425,14 +425,14 @@ public class Parsing {
         } else {
             error();
         }
-        System.out.print("<PrimaryExp>\n");
+//        System.out.print("<PrimaryExp>\n");
     }
 
     private void Number() {
         if (getWord().getSymnumber() != 2) {
             error();
         }
-        System.out.print("<Number>\n");
+//        System.out.print("<Number>\n");
     }
 
     private void UnaryExp() {
@@ -453,7 +453,7 @@ public class Parsing {
         }else{
             PrimaryExp();
         }
-        System.out.print("<UnaryExp>\n");
+//        System.out.print("<UnaryExp>\n");
     }
 
     private void UnaryOp() {
@@ -463,7 +463,7 @@ public class Parsing {
         }else{
             error();
         }
-        System.out.print("<UnaryOp>\n");
+//        System.out.print("<UnaryOp>\n");
     }
 
     private void FuncRParams() {
@@ -472,7 +472,7 @@ public class Parsing {
             getWord();
             Exp();
         }
-        System.out.print("<FuncRParams>\n");
+//        System.out.print("<FuncRParams>\n");
     }
 
     private void MulExp() {
@@ -480,24 +480,24 @@ public class Parsing {
         while (true) {
             String s = showWord().getContent();
             if (s.equals("*") || s.equals("/") || s.equals("%")) {
-                System.out.print("<MulExp>\n");
+//                System.out.print("<MulExp>\n");
                 getWord();
                 UnaryExp();
             }else{
                 break;
             }
         }
-        System.out.print("<MulExp>\n");
+//        System.out.print("<MulExp>\n");
     }
 
     private void AddExp() {
         MulExp();
         while (showWord().getContent().equals("+") || showWord().getContent().equals("-")) {
-            System.out.print("<AddExp>\n");
+//            System.out.print("<AddExp>\n");
             getWord();
             MulExp();
         }
-        System.out.print("<AddExp>\n");
+//        System.out.print("<AddExp>\n");
     }
 
     private void RelExp() {
@@ -505,49 +505,49 @@ public class Parsing {
         while (true) {
             String s = showWord().getContent();
             if (s.equals("<") || s.equals(">") || s.equals("<=") || s.equals(">=")) {
-                System.out.print("<RelExp>\n");
+//                System.out.print("<RelExp>\n");
                 getWord();
                 AddExp();
             }else{
                 break;
             }
         }
-        System.out.print("<RelExp>\n");
+//        System.out.print("<RelExp>\n");
     }
 
     private void EqExp() {
         RelExp();
         while (showWord().getContent().equals("==") || showWord().getContent().equals("!=")) {
-            System.out.print("<EqExp>\n");
+//            System.out.print("<EqExp>\n");
             getWord();
             RelExp();
         }
-        System.out.print("<EqExp>\n");
+//        System.out.print("<EqExp>\n");
     }
 
     private void LAndExp() {
         EqExp();
         while (showWord().getContent().equals("&&")) {
-            System.out.print("<LAndExp>\n");
+//            System.out.print("<LAndExp>\n");
             getWord();
             EqExp();
         }
-        System.out.print("<LAndExp>\n");
+//        System.out.print("<LAndExp>\n");
     }
 
     private void LOrExp() {
         LAndExp();
         while (showWord().getContent().equals("||")) {
-            System.out.print("<LOrExp>\n");
+//            System.out.print("<LOrExp>\n");
             getWord();
             LAndExp();
         }
-        System.out.print("<LOrExp>\n");
+//        System.out.print("<LOrExp>\n");
     }
 
     private void ConstExp() {
         AddExp();
-        System.out.print("<ConstExp>\n");
+//        System.out.print("<ConstExp>\n");
     }
 
 }
