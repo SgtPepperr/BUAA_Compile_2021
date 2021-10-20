@@ -1,3 +1,10 @@
+import Symbol_table.FuncTable;
+import Symbol_table.IntergerTable;
+import Symbol_table.Symbols.ArraySymbol;
+import Symbol_table.Symbols.FuncSymbol;
+import Symbol_table.Symbols.NorSymbol;
+import Symbol_table.Symbols.VarSymbol;
+
 import java.util.ArrayList;
 
 public class Parsing {
@@ -10,6 +17,8 @@ public class Parsing {
 
     private final ArrayList<Word> words;
     private int index = 0;
+    private FuncTable functable=new FuncTable();
+    private IntergerTable inttable=new IntergerTable();
 
     public Parsing(ArrayList<Word> words) {
         this.words = words;
@@ -47,6 +56,10 @@ public class Parsing {
 
     private void error() {
         System.out.print("---------------wrong-------------");
+    }
+
+    private void errordeal(int type,int line){
+            System.out.print(line+" "+(char)('a'+type)+"\n");
     }
 
 //    private void output() {
@@ -96,9 +109,14 @@ public class Parsing {
 //        System.out.print("<BType>\n");
     }
 
-    private void ConstDef() {
-        if (getWord().getSymnumber() == 1) {
+    private void ConstDef() {                                        //暂时不考虑多维数组每一维的个数
+        Word w=getWord();
+        String name=w.getContent();
+        int line=w.getLine();
+        if (w.getSymnumber() == 1) {
+            int count=0;
             while (showWord().getContent().equals("[")) {
+                count++;
                 getWord();
                 ConstExp();
                 if (!getWord().getContent().equals("]")) {
@@ -109,9 +127,23 @@ public class Parsing {
                 error();
             }
             ConstInitVal();
+
+            if(inttable.contains(name)){                          //错误处理b型
+                errordeal(1,line);
+            }else {
+                if (count == 0) {
+                    NorSymbol sym = new VarSymbol(name, true);
+                    inttable.add(name,sym);
+                } else {
+                    NorSymbol sym = new ArraySymbol(name, true, count);
+                    inttable.add(name,sym);
+                }
+            }
+
         } else {
             error();
         }
+
 
 //        System.out.print("<ConstDef>\n");
     }
@@ -151,8 +183,13 @@ public class Parsing {
     }
 
     private void VarDef() {
-        if (getWord().getSymnumber() == 1) {
+        Word w=getWord();
+        String name=w.getContent();
+        int line=w.getLine();
+        if (w.getSymnumber() == 1) {
+            int count=0;
             while (showWord().getContent().equals("[")) {
+                count++;
                 getWord();
                 ConstExp();
                 if (!getWord().getContent().equals("]")) {
@@ -163,6 +200,19 @@ public class Parsing {
                 getWord();
                 InitVal();
             }
+
+            if(inttable.contains(name)){                          //错误处理b型
+                errordeal(1,line);
+            }else {
+                if (count == 0) {
+                    NorSymbol sym = new VarSymbol(name, false);
+                    inttable.add(name,sym);
+                } else {
+                    NorSymbol sym = new ArraySymbol(name, false, count);
+                    inttable.add(name,sym);
+                }
+            }
+
         } else {
             error();
         }
@@ -191,8 +241,17 @@ public class Parsing {
     }
 
     private void FuncDef() {
-        FuncType();
-        if (getWord().getSymnumber() != 1) {
+
+        IntergerTable newtable=new IntergerTable();               //进入函数创建一个新的作用域
+        newtable.setOut(inttable);
+        inttable=newtable;
+
+        int type=FuncType();
+        Word w=getWord();
+        String name=w.getContent();
+        int line=w.getLine();
+        ArrayList<NorSymbol> list=new ArrayList<>();
+        if (w.getSymnumber() != 1) {
             error();
         }
         if (!getWord().getContent().equals( "(")) {
@@ -202,12 +261,20 @@ public class Parsing {
             getWord();
             Block();
         }else{
-            FuncFParams();
+            list=FuncFParams();
             if (!getWord().getContent().equals( ")")) {
                 error();
             }
             Block();
         }
+        if(functable.contains(name)){                          //错误处理b型
+            errordeal(1,line);
+        }else {
+                FuncSymbol sym = new FuncSymbol(name, list, type);
+                functable.add(name,sym);
+        }
+
+        inttable=inttable.getOut();
 //        System.out.print("<FuncDef>\n");
     }
 
@@ -220,52 +287,78 @@ public class Parsing {
 //        System.out.print("<MainFuncDef>\n");
     }
 
-    private void FuncType() {
+    private int FuncType() {
         String s = getWord().getContent();
-        if (!s.equals( "void") && !s.equals( "int"))
-            error();
+        if(s.equals("void"))
+            return 0;
+        else if(s.equals("int"))
+            return 1;
+        else
+            return -1;
 //        System.out.print("<FuncType>\n");
     }
 
-    private void FuncFParams() {
-        FuncFParam();
+    private ArrayList<NorSymbol> FuncFParams() {
+        ArrayList<NorSymbol> list=new ArrayList<>();
+        list.add(FuncFParam());
         while (showWord().getContent().equals(",")) {
             getWord();
-            FuncFParam();
+            list.add(FuncFParam());
         }
+        return list;
 //        System.out.print("<FuncFParams>\n");
     }
 
-    private void FuncFParam() {
+    private NorSymbol FuncFParam() {
         BType();
-        if (getWord().getSymnumber() != 1)
+        Word w=getWord();
+        String name=w.getContent();
+        int line=w.getLine();
+        int count=0;
+        if (w.getSymnumber() != 1)
             error();
         if (showWord().getContent().equals("[")) {
+            count++;
             getWord();
             if (!getWord().getContent().equals( "]"))
                 error();
             while (showWord().getContent().equals("[")) {
+                count++;
                 getWord();
                 ConstExp();
                 if (!getWord().getContent().equals("]"))
                     error();
             }
         }
+        if(inttable.contains(name)){                          //错误处理b型
+            errordeal(1,line);
+        }
+            if (count == 0) {
+                NorSymbol sym = new VarSymbol(name, false);
+                inttable.add(name,sym);
+                return sym;
+            } else {
+                NorSymbol sym = new ArraySymbol(name, false, count);
+                inttable.add(name,sym);
+                return sym;
+            }
 //        System.out.print("<FuncFParam>\n");
     }
 
     private void Block() {
-        if(!getWord().getContent().equals("{")){
-            error();
-        }
+        getWord();
         if(showWord().getContent().equals("}")){
             getWord();
         }else{
+            IntergerTable newtable=new IntergerTable();                //进入一个新的作用域时，创建新的符号表
+            newtable.setOut(inttable);
+            inttable=newtable;
             BlockItem();
             while(!showWord().getContent().equals("}")){
                 BlockItem();
             }
             getWord();
+            inttable=inttable.getOut();
         }
 //        System.out.print("<Block>\n");
     }

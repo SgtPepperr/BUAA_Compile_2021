@@ -21,7 +21,7 @@ public class Compiler {
 //        String inputpath = "D:\\compile\\Lexical_analysis\\src\\testfile.txt";
 //        String outputpath = "D:\\compile\\Lexical_analysis\\src\\output.txt";
         String inputpath = "testfile.txt";
-        String outputpath = "output.txt";
+        String outputpath = "error.txt";
 
         StringBuffer sb=new StringBuffer();
         try {
