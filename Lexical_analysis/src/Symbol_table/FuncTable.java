@@ -24,6 +24,10 @@ public class FuncTable {
         maps.put(s,symbol);
     }
 
+    public FuncSymbol get(String s){
+        return maps.get(s);
+    }
+
     public boolean contains(String s){
         return maps.containsKey(s);
     }

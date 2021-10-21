@@ -28,6 +28,10 @@ public class IntergerTable {
         return maps.containsKey(s);
     }
 
+    public NorSymbol get(String s){
+        return maps.get(s);
+    }
+
     public void setOut(IntergerTable out) {
         this.out = out;
     }

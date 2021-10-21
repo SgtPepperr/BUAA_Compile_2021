@@ -10,12 +10,12 @@ import Word.FormatWord;
 import java.util.ArrayList;
 
 public class Parsing {
-    private enum Symbol {
-        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
-        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
-        MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
-        RBRACK, LBRACE, RBRACE
-    }
+//    private enum Symbol {
+//        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
+//        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
+//        MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
+//        RBRACK, LBRACE, RBRACE
+//    }
 
     private final ArrayList<Word> words;
     private int index = 0;
@@ -23,6 +23,7 @@ public class Parsing {
     private IntergerTable inttable=new IntergerTable();
     private int errorarray[][]=new int[100][2];
     private int errorcount=0;
+    private int CircleLevel=0;
 
     public Parsing(ArrayList<Word> words) {
         this.words = words;
@@ -92,15 +93,18 @@ public class Parsing {
     }
 
     private void ConstDecl() {
+        NorSymbol sym=new NorSymbol();
         if (getWord().getContent().equals("const")) {
             BType();
-            ConstDef();
+            sym=ConstDef();
             while (showWord().getContent().equals(",")) {
                 getWord();
-                ConstDef();
+                sym=ConstDef();
             }
-            if (!getWord().getContent().equals(";")) {
-                error();
+            if (showWord().getContent().equals(";")) {
+                getWord();
+            }else{
+                errordeal(8,sym.getLine());                             //i类错误
             }
         } else {
             error();
@@ -115,18 +119,21 @@ public class Parsing {
 //        System.out.print("<BType>\n");
     }
 
-    private void ConstDef() {                                        //暂时不考虑多维数组每一维的个数
+    private NorSymbol ConstDef() {                                        //暂时不考虑多维数组每一维的个数
         Word w=getWord();
         String name=w.getContent();
+        NorSymbol sym=new NorSymbol();
         int line=w.getLine();
         if (w.getSymnumber() == 1) {
             int count=0;
             while (showWord().getContent().equals("[")) {
                 count++;
-                getWord();
+                Word w1=getWord();
                 ConstExp();
-                if (!getWord().getContent().equals("]")) {
-                    error();
+                if (showWord().getContent().equals("]")) {              //使用[作为行号标记
+                    getWord();
+                }else{
+                    errordeal(10,w1.getLine());                   //错误处理k型
                 }
             }
             if (!getWord().getContent().equals( "=")) {
@@ -138,19 +145,19 @@ public class Parsing {
                 errordeal(1,line);
             }else {
                 if (count == 0) {
-                    NorSymbol sym = new VarSymbol(name, true);
-                    inttable.add(name,sym);
+                    sym = new VarSymbol(name, true);
                 } else {
-                    NorSymbol sym = new ArraySymbol(name, true, count);
-                    inttable.add(name,sym);
+                    sym = new ArraySymbol(name, true, count);
                 }
+                sym.setLine(line);
+                inttable.add(name,sym);
             }
 
         } else {
             error();
         }
 
-
+        return sym;
 //        System.out.print("<ConstDef>\n");
     }
 
@@ -176,19 +183,23 @@ public class Parsing {
     }
 
     private void VarDecl() {
+        NorSymbol sym=new NorSymbol();
         BType();
-        VarDef();
+        sym=VarDef();
         while (showWord().getContent().equals(",")) {
             getWord();
-            VarDef();
+            sym=VarDef();
         }
-        if (!getWord().getContent().equals(";")) {
-            error();
+        if (showWord().getContent().equals(";")) {
+            getWord();
+        }else{
+            errordeal(8,sym.getLine());                                    //i类错误类型
         }
 //        System.out.print("<VarDecl>\n");
     }
 
-    private void VarDef() {
+    private NorSymbol VarDef() {
+        NorSymbol sym=new NorSymbol();
         Word w=getWord();
         String name=w.getContent();
         int line=w.getLine();
@@ -196,10 +207,12 @@ public class Parsing {
             int count=0;
             while (showWord().getContent().equals("[")) {
                 count++;
-                getWord();
+                Word w1=getWord();
                 ConstExp();
-                if (!getWord().getContent().equals("]")) {
-                    error();
+                if (showWord().getContent().equals("]")) {              //使用[作为行号标记
+                    getWord();
+                }else{
+                    errordeal(10,w1.getLine());                   //错误处理k型
                 }
             }
             if (showWord().getContent().equals("=")) {
@@ -211,17 +224,18 @@ public class Parsing {
                 errordeal(1,line);
             }else {
                 if (count == 0) {
-                    NorSymbol sym = new VarSymbol(name, false);
-                    inttable.add(name,sym);
+                     sym = new VarSymbol(name, false);
                 } else {
-                    NorSymbol sym = new ArraySymbol(name, false, count);
-                    inttable.add(name,sym);
+                     sym = new ArraySymbol(name, false, count);
                 }
+                sym.setLine(line);
+                inttable.add(name,sym);
             }
 
         } else {
             error();
         }
+        return sym;
 //        System.out.print("<VarDef>\n");
     }
 
@@ -325,15 +339,23 @@ public class Parsing {
             error();
         if (showWord().getContent().equals("[")) {
             count++;
-            getWord();
-            if (!getWord().getContent().equals( "]"))
-                error();
+            Word w1=getWord();
+
+            if (showWord().getContent().equals( "]")){
+                getWord();
+            }else{
+                errordeal(10,w1.getLine());                //i型错误
+            }
+
             while (showWord().getContent().equals("[")) {
                 count++;
-                getWord();
+                w1=getWord();
                 ConstExp();
-                if (!getWord().getContent().equals("]"))
-                    error();
+                if (showWord().getContent().equals( "]")){
+                    getWord();
+                }else{
+                    errordeal(10,w1.getLine());                //i型错误
+                }
             }
         }
         if(inttable.contains(name)){                          //错误处理b型
@@ -400,12 +422,21 @@ public class Parsing {
             Cond();
             if(!getWord().getContent().equals(")"))
                 error();
+            CircleLevel++;                                           //循环层次增加
             Stmt();
+            CircleLevel--;
         }else if(showWord().getContent().equals("break")||showWord().getContent().equals("continue")){
-            getWord();
-            if(!getWord().getContent().equals(";")){
-                error();
+            Word w=getWord();
+
+            if(CircleLevel==0)                                       //m型错误
+                errordeal(12,w.getLine());
+
+            if(showWord().getContent().equals(";")){
+                getWord();
+            }else{
+                errordeal(8,w.getLine());                      //i类错误
             }
+
         }else if(showWord().getContent().equals("return")){
             getWord();
             if(showWord().getContent().equals(";")){
@@ -428,7 +459,7 @@ public class Parsing {
             boolean correct=w2.isCorrect();
             int num=w2.getNum();
 
-            if(correct==false)
+            if(!correct)
                 errordeal(0,count2);                            //a类错误
 
             while (showWord().getContent().equals(",")){
@@ -474,7 +505,12 @@ public class Parsing {
             }
 
             if(flag1==1){
-                LVal();
+
+                NorSymbol sym=LVal();
+                if(sym.isConst()){                               //h型错误
+                    errordeal(7,sym.getLine());
+                }
+
                 getWord();
                 if(showWord().getContent().equals("getint")){
                     getWord();
@@ -512,7 +548,8 @@ public class Parsing {
 //        System.out.print("<Cond>\n");
     }
 
-    private void LVal() {
+    private NorSymbol LVal() {
+        NorSymbol sym=new NorSymbol();
         Word w=getWord();
         String name=w.getContent();
         int line=w.getLine();
@@ -523,6 +560,7 @@ public class Parsing {
         while (inttable.getOut()!=null){                      //未定义名字c类错误
             if (inttable.contains(name)){
                 flag=1;
+                sym=inttable.get(name);
                 break;
             }
             inttable=inttable.getOut();
@@ -531,12 +569,16 @@ public class Parsing {
             errordeal(2,line);
 
         while (showWord().getContent().equals("[")) {
-            getWord();
+            Word w1=getWord();
             Exp();
-            if (!getWord().getContent().equals("]")) {
-                error();
+            if (showWord().getContent().equals( "]")){
+                getWord();
+            }else{
+                errordeal(10,w1.getLine());                //i型错误
             }
         }
+        sym.setLine(line);
+        return sym;
 //        System.out.print("<LVal>\n");
     }
 
