@@ -24,6 +24,12 @@ public class Parsing {
     private int errorarray[][]=new int[100][2];
     private int errorcount=0;
     private int CircleLevel=0;
+    private int functype=0;      //void:0,int:1
+    private boolean inCond=false;
+    private boolean isLast=false;
+    private boolean hasvoid=false;
+    private int maxarray=0;
+    private int intofunc=0;
 
     public Parsing(ArrayList<Word> words) {
         this.words = words;
@@ -57,6 +63,18 @@ public class Parsing {
             return words.get(num);
         else
             return new Word();
+    }
+
+    private boolean NextIsExp(Word w){
+        String s=w.getContent();
+        int num=w.getSymnumber();
+        if(s.equals("(")||s.equals("+")||s.equals("-")||s.equals("!")){
+            return true;
+        }else if(num==1||num==2){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     private void error() {
@@ -133,7 +151,7 @@ public class Parsing {
                 if (showWord().getContent().equals("]")) {              //使用[作为行号标记
                     getWord();
                 }else{
-                    errordeal(10,w1.getLine());                   //错误处理k型
+                    errordeal(10,w1.getLine());                   //错误处理k型缺少】
                 }
             }
             if (!getWord().getContent().equals( "=")) {
@@ -141,7 +159,7 @@ public class Parsing {
             }
             ConstInitVal();
 
-            if(inttable.contains(name)){                          //错误处理b型
+            if(inttable.contains(name)){                          //错误处理b型名字重定义
                 errordeal(1,line);
             }else {
                 if (count == 0) {
@@ -267,6 +285,7 @@ public class Parsing {
         inttable=newtable;
 
         int type=FuncType();
+        functype=type;
         Word w=getWord();
         String name=w.getContent();
         int line=w.getLine();
@@ -274,19 +293,25 @@ public class Parsing {
         if (w.getSymnumber() != 1) {
             error();
         }
-        if (!getWord().getContent().equals( "(")) {
-            error();
-        }
+        Word w1=getWord();      //"("
+
         if (showWord().getContent().equals(")")) {
             getWord();
-            Block();
-        }else{
+        }else if(showWord().getContent().equals("{")){
+            errordeal(9,w1.getLine());                         //j类错误
+        } else{
             list=FuncFParams();
-            if (!getWord().getContent().equals( ")")) {
-                error();
+            if (showWord().getContent().equals( ")")) {
+                getWord();
+            }else{
+                errordeal(9,w1.getLine());                     //j类错误
             }
-            Block();
         }
+        intofunc=1;
+        Word w2=Block();
+        if(type==1&&!isLast)
+            errordeal(6,w2.getLine());             //g类错误
+
         if(functable.contains(name)){                          //错误处理b型
             errordeal(1,line);
         }else {
@@ -294,16 +319,19 @@ public class Parsing {
                 functable.add(name,sym);
         }
 
-        inttable=inttable.getOut();
 //        System.out.print("<FuncDef>\n");
     }
 
-    private void MainFuncDef() {                         //在预判的时候就会确定符合要求，不进行每个的特殊处理
+    private void MainFuncDef() {//在预判的时候就会确定符合要求，不进行每个的特殊处理
+
         getWord();
         getWord();
         getWord();
         getWord();
-        Block();
+        functype=1;
+        Word w=Block();
+        if(!isLast)
+            errordeal(6,w.getLine());              //g类错误
 //        System.out.print("<MainFuncDef>\n");
     }
 
@@ -344,7 +372,7 @@ public class Parsing {
             if (showWord().getContent().equals( "]")){
                 getWord();
             }else{
-                errordeal(10,w1.getLine());                //i型错误
+                errordeal(10,w1.getLine());                //k型错误
             }
 
             while (showWord().getContent().equals("[")) {
@@ -354,7 +382,7 @@ public class Parsing {
                 if (showWord().getContent().equals( "]")){
                     getWord();
                 }else{
-                    errordeal(10,w1.getLine());                //i型错误
+                    errordeal(10,w1.getLine());                //k型错误
                 }
             }
         }
@@ -373,21 +401,30 @@ public class Parsing {
 //        System.out.print("<FuncFParam>\n");
     }
 
-    private void Block() {
+    private Word Block() {
         getWord();
+        Word w;
         if(showWord().getContent().equals("}")){
-            getWord();
+            isLast=false;
+            w=getWord();
         }else{
-            IntergerTable newtable=new IntergerTable();                //进入一个新的作用域时，创建新的符号表
-            newtable.setOut(inttable);
-            inttable=newtable;
+            if(intofunc==1){
+                intofunc=0;
+            }else {
+                IntergerTable newtable = new IntergerTable();                //进入一个新的作用域时，创建新的符号表
+                newtable.setOut(inttable);
+                inttable = newtable;
+            }
+            isLast=false;
             BlockItem();
             while(!showWord().getContent().equals("}")){
+                isLast=false;
                 BlockItem();
             }
-            getWord();
+            w=getWord();
             inttable=inttable.getOut();
         }
+        return w;
 //        System.out.print("<Block>\n");
     }
 
@@ -402,29 +439,43 @@ public class Parsing {
 
     private void Stmt() {
         if(showWord().getContent().equals("if")){
-            getWord();
+            inCond=true;
+            Word w=getWord();
+            int line=w.getLine();
             if(!getWord().getContent().equals("("))
                 error();
             Cond();
-            if(!getWord().getContent().equals(")"))
-                error();
+            if(showWord().getContent().equals(")")){
+                getWord();
+            }else{
+                errordeal(9,line);                             //j kind error
+            }
             Stmt();
             if(showWord().getContent().equals("else")){
                 getWord();
                 Stmt();
             }
+            inCond=false;
         }else if(showWord().getContent().equals("{")){
+            inCond=true;
             Block();
+            inCond=false;
         }else if(showWord().getContent().equals("while")){
-            getWord();
+            inCond=true;
+            Word w=getWord();
+            int line=w.getLine();
             if(!getWord().getContent().equals("("))
                 error();
             Cond();
-            if(!getWord().getContent().equals(")"))
-                error();
+            if(showWord().getContent().equals(")")){
+                getWord();
+            }else{
+                errordeal(9,line);                             //j kind error
+            }
             CircleLevel++;                                           //循环层次增加
             Stmt();
             CircleLevel--;
+            inCond=false;
         }else if(showWord().getContent().equals("break")||showWord().getContent().equals("continue")){
             Word w=getWord();
 
@@ -438,13 +489,32 @@ public class Parsing {
             }
 
         }else if(showWord().getContent().equals("return")){
-            getWord();
-            if(showWord().getContent().equals(";")){
-                getWord();
-            }else{
+            if(inCond==false)
+                isLast=true;
+            Word w=getWord();
+            int line=w.getLine();
+//            if(showWord().getContent().equals(";")){
+//                getWord();
+//            }else{
+//                Exp();
+//                if(!getWord().getContent().equals(";"))
+//                    error();
+//            }
+            if(NextIsExp(showWord())){
                 Exp();
-                if(!getWord().getContent().equals(";"))
-                    error();
+                if(functype==0)
+                    errordeal(5,line);                      //f型错误
+                if(showWord().getContent().equals(";")){
+                    getWord();
+                }else{
+                    errordeal(8,line);                              //i kind error
+                }
+            }else{
+                if(showWord().getContent().equals(";")){
+                    getWord();
+                }else{
+                    errordeal(8,line);                              //i kind error
+                }
             }
         }else if(showWord().getContent().equals("printf")){
             int symnum=0;
@@ -467,10 +537,21 @@ public class Parsing {
                 getWord();
                 Exp();
             }
-            if(!getWord().getContent().equals(")"))
-                error();
-            if(!getWord().getContent().equals(";"))
-                error();
+
+            if(showWord().getContent().equals(")")){
+                getWord();
+            }else{
+                errordeal(9,count2);                             //j kind error
+            }
+            if(showWord().getContent().equals(";")){
+                getWord();
+            }else{
+                errordeal(8,count2);                              //i kind error
+            }
+//            if(!getWord().getContent().equals(")"))
+//                error();
+//            if(!getWord().getContent().equals(";"))
+//                error();
 
             if(num!=symnum)                                           //l类错误
                 errordeal(11,count1);
@@ -484,6 +565,17 @@ public class Parsing {
             }else if(showWord(index+1).getContent().equals("(")){
                 flag1=2;
             }else if(showWord(index+1).getContent().equals("[")){
+//                int k=index+1;                                                 //有可能会出问题就是
+//                while (!showWord(k).getContent().equals(";")){
+//                    if(showWord(k).getContent().equals("=")){
+//                        break;
+//                    }
+//                    k++;
+//                }
+//                if(showWord(k).getContent().equals("="))
+//                    flag1=1;
+//                else
+//                    flag1=2;
                 int k=index+1;
                 while(showWord(k).getContent().equals("[")){
                     k++;
@@ -493,13 +585,24 @@ public class Parsing {
                             level++;
                         else if(showWord(k).getContent().equals("]"))
                             level--;
+                        else if(showWord(k).getContent().equals("=")){
+                            flag1=1;
+                            break;
+                        }else if(showWord(k).getContent().equals(";")){
+                            flag1=2;
+                            break;
+                        }
                         k++;
                     }
+                    if(flag1>0)
+                        break;
                 }
-                if(showWord(k).getContent().equals("="))
-                    flag1=1;
-                else
-                    flag1=2;
+                if(flag1==0) {
+                    if (showWord(k).getContent().equals("="))
+                        flag1 = 1;
+                    else
+                        flag1 = 2;
+                }
             }else{
                 flag1=2;
             }
@@ -511,19 +614,29 @@ public class Parsing {
                     errordeal(7,sym.getLine());
                 }
 
-                getWord();
+                Word w=getWord();
+                int line=w.getLine();
+
                 if(showWord().getContent().equals("getint")){
-                    getWord();
                     if(!getWord().getContent().equals("("))
                         error();
-                    if(!getWord().getContent().equals(")"))
-                        error();
-                    if(!getWord().getContent().equals(";"))
-                        error();
+                    if(showWord().getContent().equals(")")){
+                        getWord();
+                    }else{
+                        errordeal(9,line);                             //j kind error
+                    }
+                    if(showWord().getContent().equals(";")){
+                        getWord();
+                    }else{
+                        errordeal(8,line);                              //i kind error
+                    }
                 }else{
                     Exp();
-                    if(!getWord().getContent().equals(";"))
-                        error();
+                    if(showWord().getContent().equals(";")){
+                        getWord();
+                    }else{
+                        errordeal(8,line);                              //i kind error
+                    }
                 }
             }else{
                 Exp();
@@ -531,15 +644,20 @@ public class Parsing {
                     error();
             }
         }else{
-            Exp();
-            if(!getWord().getContent().equals(";"))
-                error();
+            Word w=Exp();
+            if(showWord().getContent().equals(";")){
+                getWord();
+            }else{
+                errordeal(8,w.getLine());                              //i kind error
+            }
         }
 //        System.out.print("<Stmt>\n");
     }
 
-    private void Exp() {
+    private Word Exp() {
+        Word w=showWord();
         AddExp();
+        return w;
 //        System.out.print("<Exp>\n");
     }
 
@@ -557,26 +675,32 @@ public class Parsing {
         if (w.getSymnumber() != 1)
             error();
 
-        while (inttable.getOut()!=null){                      //未定义名字c类错误
-            if (inttable.contains(name)){
+        IntergerTable table=inttable;
+        while (table!=null){                      //未定义名字c类错误
+            if (table.contains(name)){
                 flag=1;
-                sym=inttable.get(name);
+                sym=table.get(name);
                 break;
             }
-            inttable=inttable.getOut();
+            table=table.getOut();
         }
+
         if(flag==0)
             errordeal(2,line);
 
+        int arrayLevel=sym.getLevel();
+
         while (showWord().getContent().equals("[")) {
+            arrayLevel--;
             Word w1=getWord();
             Exp();
             if (showWord().getContent().equals( "]")){
                 getWord();
             }else{
-                errordeal(10,w1.getLine());                //i型错误
+                errordeal(10,w1.getLine());                //k型错误
             }
         }
+        maxarray=Math.max(maxarray,arrayLevel);
         sym.setLine(line);
         return sym;
 //        System.out.print("<LVal>\n");
@@ -610,20 +734,77 @@ public class Parsing {
         String s = showWord().getContent();
         if (showWord().getSymnumber() == 1 && showWord(index + 1).getContent().equals("(")) {
 
-            Word w=getWord();                             //错误处理c类
+            Word w=getWord();
             String name=w.getContent();
             int line=w.getLine();
             int flag=0;
-            if(!functable.contains(name))
-                errordeal(2,line);
+            if(!functable.contains(name)) {
+                errordeal(2, line);//错误处理c类
+                getWord();                      //(
 
-            getWord();
-            if (showWord().getContent().equals(")")) {
-                getWord();
-            }else{
-                FuncRParams();
-                if (!getWord().getContent().equals(")"))
-                    error();
+                if (NextIsExp(showWord())) {
+                    FuncRParams();
+
+                    if (showWord().getContent().equals(")")) {
+                        getWord();
+                    } else {
+                        errordeal(9, line);               //j kind error
+                    }
+                } else {
+
+                    if (showWord().getContent().equals(")")) {
+                        getWord();
+                    } else {
+                        errordeal(9, line);              //j kind error
+                    }
+                }
+
+            }else {
+                FuncSymbol sym = functable.get(name);
+                if (sym.getReturntype() == 0)
+                    maxarray = 100;                             //for return type void maxarray=100
+
+                ArrayList<NorSymbol> Fparas = sym.getParams();
+                ArrayList<Integer> Rparas = new ArrayList<>();
+                getWord();                       //(
+//            if (showWord().getContent().equals(")")) {
+//                getWord();
+//            }else{
+//                FuncRParams();
+//                if (!getWord().getContent().equals(")"))
+//                    error();
+//            }
+                if (NextIsExp(showWord())) {
+                    Rparas = FuncRParams();
+
+                    if (Rparas.size() != Fparas.size()) {
+                        errordeal(3, line);                          //d类型错误
+                    }
+
+                    for (int i = 0; i < Rparas.size(); i++) {
+                        if (Rparas.get(i) != Fparas.get(i).getLevel()) {
+                            errordeal(4, line);
+                            break;                                         //e类型错误
+                        }
+                    }
+
+                    if (showWord().getContent().equals(")")) {
+                        getWord();
+                    } else {
+                        errordeal(9, line);               //j kind error
+                    }
+                } else {
+
+                    if (Rparas.size() != Fparas.size()) {
+                        errordeal(3, line);
+                    }
+
+                    if (showWord().getContent().equals(")")) {
+                        getWord();
+                    } else {
+                        errordeal(9, line);              //j kind error
+                    }
+                }
             }
         }else if (s.equals("+") || s.equals("-") || s.equals("!")) {
             UnaryOp();
@@ -644,12 +825,18 @@ public class Parsing {
 //        System.out.print("<UnaryOp>\n");
     }
 
-    private void FuncRParams() {
+    private ArrayList<Integer> FuncRParams() {
+        ArrayList<Integer> list=new ArrayList<>();
+        maxarray=0;
         Exp();
+        list.add(maxarray);
         while (showWord().getContent().equals(",")) {
             getWord();
+            maxarray=0;
             Exp();
+            list.add(maxarray);
         }
+        return list;
 //        System.out.print("<FuncRParams>\n");
     }
 

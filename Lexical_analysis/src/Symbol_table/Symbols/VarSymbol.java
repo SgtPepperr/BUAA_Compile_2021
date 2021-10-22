@@ -1,7 +1,6 @@
 package Symbol_table.Symbols;
 
 public class VarSymbol extends NorSymbol {
-    private boolean isConst;
     private int value;
 
     public VarSymbol(String name,boolean isConst, int value) {
@@ -12,10 +11,6 @@ public class VarSymbol extends NorSymbol {
         super(name,isConst);
     }
 
-    @Override
-    public boolean isConst() {
-        return isConst;
-    }
 
     public int getValue() {
         return value;

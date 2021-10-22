@@ -169,6 +169,7 @@ public class Sym {
                             flag=false;
                         }
                     }else if(prech[last]==32||prech[last]==33||prech[last]>=40&&prech[last]<=126){
+                        last++;
                         continue;
                     }else{
                         flag=false;
