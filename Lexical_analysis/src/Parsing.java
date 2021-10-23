@@ -30,11 +30,12 @@ public class Parsing {
     private boolean inCond = false;
     private boolean isLast = false;
     private boolean hasvoid = false;
-    private int maxarray = 0;
+    private ArrayList<Integer> maxarray = new ArrayList<>();
     private int intofunc = 0;
 
     public Parsing(ArrayList<Word> words) {
         this.words = words;
+        maxarray.add(0);
         analyse();
         errorout();
     }
@@ -730,7 +731,7 @@ public class Parsing {
                 errordeal(10, w1.getLine());                //k型错误
             }
         }
-        maxarray = Math.max(maxarray, arrayLevel);
+        maxarray.set(0, Math.max(maxarray.get(0), arrayLevel));
         sym.setLine(line);
         return sym;
 //        System.out.print("<LVal>\n");
@@ -775,8 +776,9 @@ public class Parsing {
                 getWord();                      //(
 
                 if (NextIsExp(showWord())) {
+                    maxarray.add(0, 0);
                     FuncRParams();
-
+                    maxarray.remove(0);
                     if (showWord().getContent().equals(")")) {
                         getWord();
                     } else {
@@ -794,7 +796,7 @@ public class Parsing {
             } else {
                 FuncSymbol sym = functable.get(name);
                 if (sym.getReturntype() == 0)
-                    maxarray = 100;                             //for return type void maxarray=100
+                    maxarray.set(0, 100);                             //for return type void maxarray=100
 
                 ArrayList<NorSymbol> Fparas = sym.getParams();
                 ArrayList<Integer> Rparas = new ArrayList<>();
@@ -807,8 +809,9 @@ public class Parsing {
 //                    error();
 //            }
                 if (NextIsExp(showWord())) {
+                    maxarray.add(0, 0);
                     Rparas = FuncRParams();
-
+                    maxarray.remove(0);
                     if (Rparas.size() != Fparas.size()) {
                         errordeal(3, line);                          //d类型错误
                     } else {
@@ -859,14 +862,14 @@ public class Parsing {
 
     private ArrayList<Integer> FuncRParams() {
         ArrayList<Integer> list = new ArrayList<>();
-        maxarray = 0;
+        maxarray.set(0, 0);
         Exp();
-        list.add(maxarray);
+        list.add(maxarray.get(0));
         while (showWord().getContent().equals(",")) {
             getWord();
-            maxarray = 0;
+            maxarray.set(0, 0);
             Exp();
-            list.add(maxarray);
+            list.add(maxarray.get(0));
         }
         return list;
 //        System.out.print("<FuncRParams>\n");
