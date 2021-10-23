@@ -85,7 +85,7 @@ public class Parsing {
     }
 
     private void errordeal(int type, int line) {
-        System.out.print(line + " " + (char) ('a' + type) + "\n");
+        //      System.out.print(line + " " + (char) ('a' + type) + "\n");
         errorarray[errorcount][0] = line;
         errorarray[errorcount++][1] = type;
     }
@@ -430,6 +430,10 @@ public class Parsing {
         if (showWord().getContent().equals("}")) {
             isLast = false;
             w = getWord();
+            if (intofunc == 1) {
+                intofunc = 0;
+                inttable = inttable.getOut();
+            }
         } else {
             if (intofunc == 1) {
                 intofunc = 0;
