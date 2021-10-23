@@ -85,7 +85,7 @@ public class Parsing {
     }
 
     private void errordeal(int type, int line) {
-//            System.out.print(line+" "+(char)('a'+type)+"\n");
+        System.out.print(line + " " + (char) ('a' + type) + "\n");
         errorarray[errorcount][0] = line;
         errorarray[errorcount++][1] = type;
     }
@@ -807,12 +807,12 @@ public class Parsing {
 
                     if (Rparas.size() != Fparas.size()) {
                         errordeal(3, line);                          //d类型错误
-                    }
-
-                    for (int i = 0; i < Rparas.size(); i++) {
-                        if (Rparas.get(i) != Fparas.get(i).getLevel()) {
-                            errordeal(4, line);
-                            break;                                         //e类型错误
+                    } else {
+                        for (int i = 0; i < Rparas.size(); i++) {
+                            if (Rparas.get(i) != Fparas.get(i).getLevel()) {
+                                errordeal(4, line);
+                                break;                                         //e类型错误
+                            }
                         }
                     }
 
