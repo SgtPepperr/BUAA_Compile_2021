@@ -13,7 +13,7 @@ public class Expr extends Stmt {
         this.op = op;
     }
 
-    public Expr gen() {
+    public Expr reduce() {
         return this;
     }
 
@@ -22,6 +22,9 @@ public class Expr extends Stmt {
         return op.toString();
     }
 
+    public int calculate() {
+        return 0;
+    }
     //    public Expr reduce() {
 //        return this;
 //    }

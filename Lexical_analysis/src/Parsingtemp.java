@@ -1,10 +1,5 @@
 import AST.*;
 import Midcode.midCode;
-import Symbol_table.FuncTable;
-import Symbol_table.IntergerTable;
-import Symbol_table.Symbols.ArraySymbol;
-import Symbol_table.Symbols.NorSymbol;
-import Symbol_table.Symbols.VarSymbol;
 import Word.Word;
 
 import java.util.ArrayList;
@@ -19,7 +14,8 @@ public class Parsingtemp {
         RBRACK, LBRACE, RBRACE
     }
 
-    private ArrayList<midCode> midCodes;
+    private ArrayList<midCode> midCodes=new ArrayList<>();
+    private Program root;
     private ArrayList<Word> words;
     private int label = 0;           //区分不同基本块标签
     private int temp = 0;            //区分不同临时变量
@@ -31,6 +27,8 @@ public class Parsingtemp {
 
     public void analyse() {
         CompUnit();
+        root.gen();
+        midCodes=root.getMidCodes();
         outputMidcode();
     }
 
@@ -83,7 +81,7 @@ public class Parsingtemp {
         while (!showWord(index + 1).getContent().equals("main"))
             funcs.add(FuncDef());
         funcs.add(MainFuncDef());
-        Program program = new Program(decls, funcs);
+        root = new Program(decls, funcs);
 //        System.out.print("<CompUnit>\n");
     }
 
@@ -206,7 +204,8 @@ public class Parsingtemp {
         Lval lval=null;
         Expr expr1 = null;
         Expr expr2 = null;
-        HashMap<Integer,ArrayList<Expr>> exprs = new HashMap<>();
+        ArrayList<ArrayList<Expr>> exprs = new ArrayList<>();
+        exprs.add(new ArrayList<Expr>());
         if (w.getSymnumber() == 1) {
             int count = 0;                       //记录层次信息
             while (showWord().getContent().equals("[")) {
@@ -242,11 +241,13 @@ public class Parsingtemp {
 //        System.out.print("<VarDef>\n");
     }
 
-    private void InitVal(HashMap<Integer,ArrayList<Expr>> exprs,int level) {
+    private void InitVal(ArrayList<ArrayList<Expr>> exprs,int level) {
         if (showWord().getContent().equals("{")) {
             getWord();
             if (showWord().getContent().equals("}")) {
                 getWord();
+                if(level==2)
+                    exprs.add(new ArrayList<>());
             } else {
                 InitVal(exprs,level+1);
                 while (showWord().getContent().equals(",")) {
@@ -256,11 +257,11 @@ public class Parsingtemp {
                 if (!getWord().getContent().equals("}")) {
                     error();
                 }
+                if(level==2)
+                    exprs.add(new ArrayList<>());
             }
         } else {
-            if(!exprs.containsKey(level))
-                exprs.put(level,new ArrayList<Expr>());
-            exprs.get(level).add(Exp());
+            exprs.get(exprs.size()-1).add(Exp());
         }
 //        System.out.print("<InitVal>\n");
     }

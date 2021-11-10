@@ -14,7 +14,7 @@ public class Arith extends Expr {
         this.exp2 = exp2;
     }
 
-    public Expr gen() {
+    public Expr reduce() {
         Temp t=new Temp(op);
         String midop=op.getContent();
         midCode.operation ope= midCode.operation.DEBUG;
@@ -30,11 +30,31 @@ public class Arith extends Expr {
             ope= midCode.operation.MODOP;
         }
 
-        emit(new midCode(ope,t.toString(),exp1.gen().toString(),exp2.gen().toString()));
+        emit(new midCode(ope,t.toString(),exp1.reduce().toString(),exp2.reduce().toString()));
         return t;
     }
 
-//    public Expr reduce() {
+    @Override
+    public int calculate() {
+        int value=0;
+        int left1=exp1.calculate();
+        int left2=exp2.calculate();
+        String midop=op.getContent();
+        if(midop.equals("+")){
+            value=left1+left2;
+        } else if(midop.equals("-")){
+            value=left1-left2;
+        }else if(midop.equals("*")){
+            value=left1*left2;
+        }else if(midop.equals("/")){
+            value=left1/left2;
+        }else if(midop.equals("%")){
+            value=left1%left2;
+        }
+        return value;
+    }
+
+    //    public Expr reduce() {
 //        Expr x = gen();
 //        Temp t = new Temp(midCodes,op);
 //        emit(new midCode(midCode.operation.ASSIGNOP,t,)t.toString() + " = " + x.toString());

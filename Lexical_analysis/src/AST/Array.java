@@ -23,7 +23,21 @@ public class Array extends Lval {
         super(op);
         this.oneindex = oneindex;
     }
-//    public Array( Word op,  Expr oneindex,Expr onelevel, Expr twolevel, Expr twoindex) {
+
+    public int calculate(int k1,int k2) {
+        ArraySymbol sym= (ArraySymbol) inttable.get(op.getContent());
+        return sym.getValue(k1*sym.getLevel2()+k2);
+    }
+
+    public Expr getOneindex() {
+        return oneindex;
+    }
+
+    public Expr getTwoindex() {
+        return twoindex;
+    }
+
+    //    public Array( Word op,  Expr oneindex,Expr onelevel, Expr twolevel, Expr twoindex) {
 //        super( op);
 //        this.oneindex = oneindex;
 //        this.twoindex = twoindex;

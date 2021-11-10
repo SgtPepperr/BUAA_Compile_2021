@@ -8,4 +8,6 @@ public class Def extends Node {
     public Def(Lval lval) {
         this.lval = lval;
     }
+
+
 }

@@ -14,5 +14,8 @@ public class Constant extends Expr {
         super( new Word(String.valueOf(num)));
     }
 
-
+    @Override
+    public int calculate() {
+       return Integer.parseInt(op.getContent());
+    }
 }

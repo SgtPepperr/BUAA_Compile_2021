@@ -10,4 +10,10 @@ public class Decl extends BlockItem {
         this.defs = defs;
         this.isConst = isConst;
     }
+
+    @Override
+    public void gen() {
+       for(Def d:defs)
+           d.gen();
+    }
 }

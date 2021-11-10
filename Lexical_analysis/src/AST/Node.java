@@ -2,12 +2,12 @@ package AST;
 
 
 import Midcode.midCode;
-
 import java.util.ArrayList;
+import Symbol_table.IntergerTable;
 
 public class Node {
-    public static ArrayList<midCode> midCodes;
-//    public static
+    public static ArrayList<midCode> midCodes=new ArrayList<>();
+    public static IntergerTable inttable=new IntergerTable();
     static int labels=0;
 
 
@@ -23,5 +23,12 @@ public class Node {
         midCodes.add(code);
     }
 
+    public static ArrayList<midCode> getMidCodes() {
+        return midCodes;
+    }
+
+    public void gen(){
+
+    }
 
 }

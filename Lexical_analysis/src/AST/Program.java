@@ -10,4 +10,13 @@ public class Program extends Node {
         this.decls = decls;
         this.funcs = funcs;
     }
+
+    public void gen(){
+        for(Decl d:decls){
+            d.gen();
+        }
+        for(Func f:funcs){
+            f.gen();
+        }
+    }
 }
