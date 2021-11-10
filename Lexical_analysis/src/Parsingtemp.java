@@ -8,6 +8,7 @@ import Symbol_table.Symbols.VarSymbol;
 import Word.Word;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Parsingtemp {
@@ -17,10 +18,11 @@ public class Parsingtemp {
         MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
         RBRACK, LBRACE, RBRACE
     }
+
     private ArrayList<midCode> midCodes;
     private ArrayList<Word> words;
-    private int label=0;           //区分不同基本块标签
-    private int temp=0;            //区分不同临时变量
+    private int label = 0;           //区分不同基本块标签
+    private int temp = 0;            //区分不同临时变量
     private int index = 0;
 
     public Parsingtemp(ArrayList<Word> words) {
@@ -33,31 +35,31 @@ public class Parsingtemp {
     }
 
     public void outputMidcode() {
-        for(int i=0;i< midCodes.size();i++){
+        for (int i = 0; i < midCodes.size(); i++) {
             System.out.print(midCodes.get(i).toString());
         }
     }
 
     private Word getWord() {
-        if(index<words.size()) {
+        if (index < words.size()) {
 //            System.out.print(Parsing.Symbol.values()[words.get(index).getSymnumber()]);
 //            System.out.print(' ' + words.get(index).getContent() + '\n');
             return words.get(index++);
-        }else {
+        } else {
             return new Word();
         }
 
     }
 
     private Word showWord() {
-        if(index<words.size())
+        if (index < words.size())
             return words.get(index);
         else
             return new Word();
     }
 
     private Word showWord(int num) {
-        if(num<words.size())
+        if (num < words.size())
             return words.get(num);
         else
             return new Word();
@@ -73,15 +75,15 @@ public class Parsingtemp {
 //    }
 
     private void CompUnit() {
-        LinkedList<Decl> decls=new LinkedList<>();
-        LinkedList<Func> funcs=new LinkedList<>();
+        LinkedList<Decl> decls = new LinkedList<>();
+        LinkedList<Func> funcs = new LinkedList<>();
 
-        while (!showWord(index+2).getContent().equals("("))
+        while (!showWord(index + 2).getContent().equals("("))
             decls.add(Decl());
-        while (!showWord(index+1).getContent().equals("main"))
+        while (!showWord(index + 1).getContent().equals("main"))
             funcs.add(FuncDef());
         funcs.add(MainFuncDef());
-        Program program=new Program(decls,funcs);
+        Program program = new Program(decls, funcs);
 //        System.out.print("<CompUnit>\n");
     }
 
@@ -95,12 +97,13 @@ public class Parsingtemp {
     }
 
     private Decl ConstDecl() {
+        LinkedList<Def> defs = new LinkedList<>();
         if (getWord().getContent().equals("const")) {
             BType();
-            ConstDef();
+            defs.add(ConstDef());
             while (showWord().getContent().equals(",")) {
                 getWord();
-                ConstDef();
+                defs.add(ConstDef());
             }
             if (!getWord().getContent().equals(";")) {
                 error();
@@ -108,6 +111,7 @@ public class Parsingtemp {
         } else {
             error();
         }
+        return new Decl(defs, true);
 //        System.out.print("<ConstDecl>\n");
     }
 
@@ -118,313 +122,372 @@ public class Parsingtemp {
 //        System.out.print("<BType>\n");
     }
 
-    private void ConstDef() {
-        Word w=getWord();
-        String name=w.getContent();
-        NorSymbol sym=new NorSymbol();          //提取定义标识符基本信息
-
+    private Def ConstDef() {
+        Word w = getWord();
+        Lval lval=null;
+        Expr expr1 = null;
+        Expr expr2 = null;
+        ArrayList<Expr> exprs = new ArrayList<>();
         if (w.getSymnumber() == 1) {
-            int count=0;                       //记录层次信息
+            int count = 0;                       //记录层次信息
             while (showWord().getContent().equals("[")) {
                 count++;
                 getWord();
-                ConstExp();
+
+                if (count == 1)
+                    expr1 = ConstExp();
+                else if (count == 2)
+                    expr2 = ConstExp();
+
                 if (!getWord().getContent().equals("]")) {
                     error();
                 }
             }
-            if (!getWord().getContent().equals( "=")) {
+
+            if (count == 0)
+                lval = new Id(w);               //产生左值表达式
+            else if (count == 1)
+                lval = new Array(w, expr1);
+            else
+                lval = new Array(w, expr1, expr2);
+
+            if (!getWord().getContent().equals("=")) {
                 error();
             }
-            ConstInitVal();
+            ConstInitVal(exprs);
 
-            if(count==0){
-                sym=new VarSymbol(name,true);
-            } else{
-                sym=new ArraySymbol(name,true,count);
-            }
-            inttable
         } else {
             error();
         }
-
+        return new ConstDef(lval,exprs);
 //        System.out.print("<ConstDef>\n");
     }
 
-    private void ConstInitVal() {
+    private void ConstInitVal(ArrayList<Expr> exprs) {
         if (showWord().getContent().equals("{")) {
             getWord();
             if (showWord().getContent().equals("}")) {
                 getWord();
-            } else{
-                ConstInitVal();
+            } else {
+                ConstInitVal(exprs);
                 while (showWord().getContent().equals(",")) {
                     getWord();
-                    ConstInitVal();
+                    ConstInitVal(exprs);
                 }
                 if (!getWord().getContent().equals("}")) {
                     error();
                 }
             }
-        } else{
-            ConstExp();
+        } else {
+            exprs.add(ConstExp());
         }
 //        System.out.print("<ConstInitVal>\n");
     }
 
-    private void VarDecl() {
+    private Decl VarDecl() {
+        LinkedList<Def> defs=new LinkedList<>();
         BType();
-        VarDef();
+        defs.add(VarDef());
         while (showWord().getContent().equals(",")) {
             getWord();
-            VarDef();
+            defs.add(VarDef());
         }
         if (!getWord().getContent().equals(";")) {
             error();
         }
+        return new Decl(defs,false);
 //        System.out.print("<VarDecl>\n");
     }
 
-    private void VarDef() {
-        if (getWord().getSymnumber() == 1) {
+    private Def VarDef() {
+
+        Word w = getWord();
+        int level=0;    //变量初始化层次
+        Lval lval=null;
+        Expr expr1 = null;
+        Expr expr2 = null;
+        HashMap<Integer,ArrayList<Expr>> exprs = new HashMap<>();
+        if (w.getSymnumber() == 1) {
+            int count = 0;                       //记录层次信息
             while (showWord().getContent().equals("[")) {
+                count++;
                 getWord();
-                ConstExp();
+
+                if (count == 1)
+                    expr1 = ConstExp();
+                else if (count == 2)
+                    expr2 = ConstExp();
+
                 if (!getWord().getContent().equals("]")) {
                     error();
                 }
             }
+
+            if (count == 0)
+                lval = new Id(w);               //产生左值表达式
+            else if (count == 1)
+                lval = new Array(w, expr1);
+            else
+                lval = new Array(w, expr1, expr2);
+
             if (showWord().getContent().equals("=")) {
                 getWord();
-                InitVal();
+                InitVal(exprs,level);
             }
+
         } else {
             error();
         }
+        return new VarDef(lval,exprs);
 //        System.out.print("<VarDef>\n");
     }
 
-    private void InitVal() {
+    private void InitVal(HashMap<Integer,ArrayList<Expr>> exprs,int level) {
         if (showWord().getContent().equals("{")) {
             getWord();
             if (showWord().getContent().equals("}")) {
                 getWord();
-            }else{
-                InitVal();
+            } else {
+                InitVal(exprs,level+1);
                 while (showWord().getContent().equals(",")) {
                     getWord();
-                    InitVal();
+                    InitVal(exprs,level+1);
                 }
                 if (!getWord().getContent().equals("}")) {
                     error();
                 }
             }
-        }else{
-            Exp();
+        } else {
+            if(!exprs.containsKey(level))
+                exprs.put(level,new ArrayList<Expr>());
+            exprs.get(level).add(Exp());
         }
 //        System.out.print("<InitVal>\n");
     }
 
-    private void FuncDef() {
-        FuncType();
-        if (getWord().getSymnumber() != 1) {
-            error();
-        }
-        if (!getWord().getContent().equals( "(")) {
+    private Func FuncDef() {
+        int functype=FuncType();
+        Id id=new Id(getWord());
+        ArrayList<Fparam> paras=new ArrayList<>();
+        Block block;
+        if (!getWord().getContent().equals("(")) {
             error();
         }
         if (showWord().getContent().equals(")")) {
             getWord();
-            Block();
-        }else{
-            FuncFParams();
-            if (!getWord().getContent().equals( ")")) {
+            block=Block();
+        } else {
+            paras=FuncFParams();
+            if (!getWord().getContent().equals(")")) {
                 error();
             }
-            Block();
+            block=Block();
         }
+        return new Func(functype,id,paras,block);
 //        System.out.print("<FuncDef>\n");
     }
 
-    private void MainFuncDef() {                         //在预判的时候就会确定符合要求，不进行每个的特殊处理
+    private Func MainFuncDef() {                         //在预判的时候就会确定符合要求，不进行每个的特殊处理
         getWord();
         getWord();
         getWord();
         getWord();
-        Block();
+        Block block=Block();
+        return new Func(1,null,null,block,true);
 //        System.out.print("<MainFuncDef>\n");
     }
 
-    private void FuncType() {
+    private int FuncType() {
         String s = getWord().getContent();
-        if (!s.equals( "void") && !s.equals( "int"))
-            error();
 //        System.out.print("<FuncType>\n");
+        if(s.equals("void"))
+            return 0;
+        else if(s.equals("int"))
+            return 1;
+        else
+            return -1;
     }
 
-    private void FuncFParams() {
-        FuncFParam();
+    private ArrayList<Fparam> FuncFParams() {
+        ArrayList<Fparam> list=new ArrayList<>();
+        list.add(FuncFParam());
         while (showWord().getContent().equals(",")) {
             getWord();
-            FuncFParam();
+            list.add(FuncFParam());
         }
+        return list;
 //        System.out.print("<FuncFParams>\n");
     }
 
-    private void FuncFParam() {
+    private Fparam FuncFParam() {
         BType();
-        if (getWord().getSymnumber() != 1)
-            error();
+        int count=0;
+        Expr expr=null;
+        Id id=new Id(getWord());
         if (showWord().getContent().equals("[")) {
+            count++;
             getWord();
-            if (!getWord().getContent().equals( "]"))
+            if (!getWord().getContent().equals("]"))
                 error();
             while (showWord().getContent().equals("[")) {
+                count++;
                 getWord();
-                ConstExp();
+                expr=ConstExp();
                 if (!getWord().getContent().equals("]"))
                     error();
             }
         }
+        return new Fparam(id,count,expr);
 //        System.out.print("<FuncFParam>\n");
     }
 
-    private void Block() {
-        if(!getWord().getContent().equals("{")){
+    private Block Block() {
+        ArrayList<BlockItem> items=new ArrayList<>();
+        if (!getWord().getContent().equals("{")) {
             error();
         }
-        if(showWord().getContent().equals("}")){
+        if (showWord().getContent().equals("}")) {
             getWord();
-        }else{
-            BlockItem();
-            while(!showWord().getContent().equals("}")){
-                BlockItem();
+        } else {
+            items.add(BlockItem());
+            while (!showWord().getContent().equals("}")) {
+                items.add(BlockItem());
             }
             getWord();
         }
+        return new Block(items);
 //        System.out.print("<Block>\n");
     }
 
-    private void BlockItem() {
-        if(showWord().getContent().equals("int")||showWord().getContent().equals("const")){
-            Decl();
-        }else{
-            Stmt();
+    private BlockItem BlockItem() {
+        if (showWord().getContent().equals("int") || showWord().getContent().equals("const")) {
+            return Decl();
+        } else {
+            return Stmt();
         }
 //        System.out.print("<BlockItem>\n");
     }
 
-    private void Stmt() {
-        if(showWord().getContent().equals("if")){
+    private Stmt Stmt() {
+        if (showWord().getContent().equals("if")) {
             getWord();
-            if(!getWord().getContent().equals("("))
+            if (!getWord().getContent().equals("("))
                 error();
             Cond();
-            if(!getWord().getContent().equals(")"))
+            if (!getWord().getContent().equals(")"))
                 error();
             Stmt();
-            if(showWord().getContent().equals("else")){
+            if (showWord().getContent().equals("else")) {
                 getWord();
                 Stmt();
             }
-        }else if(showWord().getContent().equals("{")){
-            Block();
-        }else if(showWord().getContent().equals("while")){
+        } else if (showWord().getContent().equals("{")) {
+            return Block();
+        } else if (showWord().getContent().equals("while")) {
             getWord();
-            if(!getWord().getContent().equals("("))
+            if (!getWord().getContent().equals("("))
                 error();
             Cond();
-            if(!getWord().getContent().equals(")"))
+            if (!getWord().getContent().equals(")"))
                 error();
             Stmt();
-        }else if(showWord().getContent().equals("break")||showWord().getContent().equals("continue")){
+        } else if (showWord().getContent().equals("break") || showWord().getContent().equals("continue")) {
             getWord();
-            if(!getWord().getContent().equals(";")){
+            if (!getWord().getContent().equals(";")) {
                 error();
             }
-        }else if(showWord().getContent().equals("return")){
+        } else if (showWord().getContent().equals("return")) {
+            Expr expr=null;
             getWord();
-            if(showWord().getContent().equals(";")){
+            if (showWord().getContent().equals(";")) {
                 getWord();
-            }else{
-                Exp();
-                if(!getWord().getContent().equals(";"))
+            } else {
+                expr=Exp();
+                if (!getWord().getContent().equals(";"))
                     error();
             }
-        }else if(showWord().getContent().equals("printf")){
+            return new Ret(expr);
+        } else if (showWord().getContent().equals("printf")) {
+            Word format;
+            ArrayList<Expr> exprs=new ArrayList<>();
             getWord();
-            if(!getWord().getContent().equals("("))
+            if (!getWord().getContent().equals("("))
                 error();
-            if(getWord().getSymnumber()!=3)
-                error();
-            while (showWord().getContent().equals(",")){
+            format=getWord();
+            while (showWord().getContent().equals(",")) {
                 getWord();
-                Exp();
+                exprs.add(Exp());
             }
-            if(!getWord().getContent().equals(")"))
+            if (!getWord().getContent().equals(")"))
                 error();
-            if(!getWord().getContent().equals(";"))
+            if (!getWord().getContent().equals(";"))
                 error();
-        }else if(showWord().getContent().equals(";")){
+            return new Print(format,exprs);
+        } else if (showWord().getContent().equals(";")) {
             getWord();
-        }else if(showWord().getSymnumber()==1){
-            int flag1=0;
+        } else if (showWord().getSymnumber() == 1) {
+            int flag1 = 0;
             if (showWord(index + 1).getContent().equals("=")) {
-                flag1=1;
-            }else if(showWord(index+1).getContent().equals("(")){
-                flag1=2;
-            }else if(showWord(index+1).getContent().equals("[")){
-                int k=index+1;
-                while(showWord(k).getContent().equals("[")){
+                flag1 = 1;
+            } else if (showWord(index + 1).getContent().equals("(")) {
+                flag1 = 2;
+            } else if (showWord(index + 1).getContent().equals("[")) {
+                int k = index + 1;
+                while (showWord(k).getContent().equals("[")) {
                     k++;
-                    int level=1;
-                    while(level>0){
-                        if(showWord(k).getContent().equals("["))
+                    int level = 1;
+                    while (level > 0) {
+                        if (showWord(k).getContent().equals("["))
                             level++;
-                        else if(showWord(k).getContent().equals("]"))
+                        else if (showWord(k).getContent().equals("]"))
                             level--;
                         k++;
                     }
                 }
-                if(showWord(k).getContent().equals("="))
-                    flag1=1;
+                if (showWord(k).getContent().equals("="))
+                    flag1 = 1;
                 else
-                    flag1=2;
-            }else{
-                flag1=2;
+                    flag1 = 2;
+            } else {
+                flag1 = 2;
             }
 
-            if(flag1==1){
-                LVal();
+            if (flag1 == 1) {
+                Lval lval= (Lval) LVal();
                 getWord();
-                if(showWord().getContent().equals("getint")){
+                if (showWord().getContent().equals("getint")) {
                     getWord();
-                    if(!getWord().getContent().equals("("))
+                    if (!getWord().getContent().equals("("))
                         error();
-                    if(!getWord().getContent().equals(")"))
+                    if (!getWord().getContent().equals(")"))
                         error();
-                    if(!getWord().getContent().equals(";"))
+                    if (!getWord().getContent().equals(";"))
                         error();
-                }else{
-                    Exp();
-                    if(!getWord().getContent().equals(";"))
+                    return new Scanf(lval);
+                } else {
+                    Expr expr=Exp();
+                    if (!getWord().getContent().equals(";"))
                         error();
+                    return new Assign(lval,expr);
                 }
-            }else{
-                Exp();
-                if(!getWord().getContent().equals(";"))
+            } else {
+                Expr expr=Exp();
+                if (!getWord().getContent().equals(";"))
                     error();
+                return expr;
             }
-        }else{
-            Exp();
-            if(!getWord().getContent().equals(";"))
+        } else {
+            Expr expr=Exp();
+            if (!getWord().getContent().equals(";"))
                 error();
+            return expr;
         }
+        return null;
 //        System.out.print("<Stmt>\n");
     }
 
     private Expr Exp() {
-        Expr expr=AddExp();
+        Expr expr = AddExp();
         return expr;
 //        System.out.print("<Exp>\n");
     }
@@ -435,29 +498,29 @@ public class Parsingtemp {
     }
 
     private Expr LVal() {
-        Word id=getWord();
-        int flag=0;
-        Expr exp1;
-        Expr exp2;
+        Word id = getWord();
+        int flag = 0;
+        Expr exp1=null;
+        Expr exp2=null;
         while (showWord().getContent().equals("[")) {
             flag++;
             getWord();
 
-            if(flag==0)
-                exp1=Exp();
-            else if(flag==1)
-                exp2=Exp();
+            if (flag == 0)
+                exp1 = Exp();
+            else if (flag == 1)
+                exp2 = Exp();
 
             if (!getWord().getContent().equals("]")) {
                 error();
             }
         }
-        if(flag==0){
-            return new Id(midCodes,id);
-        }else if(flag==1){
-
-        }else{
-
+        if (flag == 0) {
+            return new Id( id);
+        } else if (flag == 1) {
+            return new Array(id,exp1);
+        } else {
+            return new Array(id,exp1,exp2);
         }
 //        System.out.print("<LVal>\n");
     }
@@ -465,77 +528,76 @@ public class Parsingtemp {
     private Expr PrimaryExp() {
         if (showWord().getContent().equals("(")) {
             getWord();
-            Exp();
+            Expr expr=Exp();
             if (!getWord().getContent().equals(")")) {
                 error();
             }
-        }else if (showWord().getSymnumber() == 1) {
-            LVal();
+            return expr;
+        } else if (showWord().getSymnumber() == 1) {
+            return LVal();
         } else if (showWord().getSymnumber() == 2) {
-            Number();
+            return Number();
         } else {
             error();
         }
+        return null;
 //        System.out.print("<PrimaryExp>\n");
     }
 
     private Expr Number() {
-        if (getWord().getSymnumber() != 2) {
-            error();
-        }
+        return new Constant(getWord());
 //        System.out.print("<Number>\n");
     }
 
     private Expr UnaryExp() {
         String s = showWord().getContent();
         if (showWord().getSymnumber() == 1 && showWord(index + 1).getContent().equals("(")) {
-            getWord();
+            Word w=getWord();
+            ArrayList<Expr> exprs=new ArrayList<>();
             getWord();
             if (showWord().getContent().equals(")")) {
                 getWord();
-            }else{
-                FuncRParams();
+            } else {
+                exprs=FuncRParams();
                 if (!getWord().getContent().equals(")"))
                     error();
             }
-        }else if (s.equals("+") || s.equals("-") || s.equals("!")) {
-            UnaryOp();
-            UnaryExp();
-        }else{
-            PrimaryExp();
+            return new FuncR(w,exprs);
+        } else if (s.equals("+") || s.equals("-") || s.equals("!")) {
+            Word w=UnaryOp();
+            Expr expr=UnaryExp();
+            return new Unary(w,expr);
+        } else {
+            return PrimaryExp();
         }
 //        System.out.print("<UnaryExp>\n");
     }
 
-    private void UnaryOp() {
-        String s = getWord().getContent();
-        if (s.equals("+") || s.equals( "-") || s.equals( "!")) {
-
-        }else{
-            error();
-        }
-//        System.out.print("<UnaryOp>\n");
+    private Word UnaryOp() {
+        return getWord();
     }
 
-    private void FuncRParams() {
-        Exp();
+    private ArrayList<Expr> FuncRParams() {
+        ArrayList<Expr> exprs=new ArrayList<>();
+        exprs.add(Exp());
         while (showWord().getContent().equals(",")) {
             getWord();
-            Exp();
+            exprs.add(Exp());
         }
+        return exprs;
 //        System.out.print("<FuncRParams>\n");
     }
 
     private Expr MulExp() {
-        Expr expr1=UnaryExp();
+        Expr expr1 = UnaryExp();
         while (true) {
             String s = showWord().getContent();
             if (s.equals("*") || s.equals("/") || s.equals("%")) {
 //                System.out.print("<MulExp>\n");
-                Word w=getWord();
-                Expr expr2=UnaryExp();
-                expr1=new Arith(midCodes,w,expr1,expr2);
-            }else{
+                Word w = getWord();
+                Expr expr2 = UnaryExp();
+                expr1 = new Arith( w, expr1, expr2);
+            } else {
                 break;
             }
         }
@@ -544,12 +606,12 @@ public class Parsingtemp {
     }
 
     private Expr AddExp() {
-        Expr expr1=MulExp();
+        Expr expr1 = MulExp();
         while (showWord().getContent().equals("+") || showWord().getContent().equals("-")) {
 //            System.out.print("<AddExp>\n");
-            Word w=getWord();
-            Expr expr2=MulExp();
-            expr1=new Arith(midCodes,w,expr1,expr2);
+            Word w = getWord();
+            Expr expr2 = MulExp();
+            expr1 = new Arith( w, expr1, expr2);
         }
         return expr1;
 //        System.out.print("<AddExp>\n");
@@ -563,7 +625,7 @@ public class Parsingtemp {
 //                System.out.print("<RelExp>\n");
                 getWord();
                 AddExp();
-            }else{
+            } else {
                 break;
             }
         }
@@ -601,7 +663,7 @@ public class Parsingtemp {
     }
 
     private Expr ConstExp() {
-        Expr e=AddExp();
+        Expr e = AddExp();
         return e;
 //        System.out.print("<ConstExp>\n");
     }

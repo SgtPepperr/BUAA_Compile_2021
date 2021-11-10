@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 public class FuncR extends Expr{
     ArrayList<Expr> Rparas;
-    public FuncR(Word op) {
+
+    public FuncR(Word op, ArrayList<Expr> rparas) {
         super(op);
+        Rparas = rparas;
     }
 }

@@ -7,4 +7,20 @@ public class Func extends Node{
     Id id;
     ArrayList<Fparam> paras;
     Block block;
+    Boolean isMain=false;
+
+    public Func(int functype, Id id, ArrayList<Fparam> paras, Block block) {
+        this.functype = functype;
+        this.id = id;
+        this.paras = paras;
+        this.block = block;
+    }
+
+    public Func(int functype, Id id, ArrayList<Fparam> paras, Block block, Boolean isMain) {
+        this.functype = functype;
+        this.id = id;
+        this.paras = paras;
+        this.block = block;
+        this.isMain = isMain;
+    }
 }
