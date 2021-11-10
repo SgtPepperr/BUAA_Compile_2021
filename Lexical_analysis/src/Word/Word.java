@@ -16,6 +16,11 @@ public class Word {
         this.content="";
     }
 
+    public Word(String content){
+        this.symnumber=0;
+        this.content=content;
+    }
+
     public int getSymnumber() {
         return symnumber;
     }
@@ -26,5 +31,10 @@ public class Word {
 
     public int getLine() {
         return line;
+    }
+
+    @Override
+    public String toString() {
+        return content;
     }
 }

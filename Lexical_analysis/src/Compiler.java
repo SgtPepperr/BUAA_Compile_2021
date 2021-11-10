@@ -21,7 +21,7 @@ public class Compiler {
 //        String inputpath = "D:\\compile\\Lexical_analysis\\src\\testfile.txt";
 //        String outputpath = "D:\\compile\\Lexical_analysis\\src\\output.txt";
         String inputpath = "testfile.txt";
-        String outputpath = "error.txt";
+        String outputpath = "output.txt";
 
         StringBuffer sb=new StringBuffer();
         try {
@@ -48,7 +48,8 @@ public class Compiler {
 
         Sym sym=new Sym(source);
         Parsing parsing=new Parsing(sym.getWords());
-
+        Parsingtemp parsingtemp=new Parsingtemp(sym.getWords());
+        parsingtemp.analyse();
 //        try {
 //            Scanner in = new Scanner(new FileReader(inputpath));
 //            while (in.hasNextLine()) {
