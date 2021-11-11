@@ -37,6 +37,25 @@ public class Array extends Lval {
         return twoindex;
     }
 
+    @Override
+    public Expr reduce() {
+        if(twoindex==null){
+            Temp temp=new Temp(op);
+            emit(new midCode(midCode.operation.GETARRAY,temp.toString(),op.getContent(),oneindex.reduce().toString()));
+            return temp;
+        }else{
+            Temp temp1=new Temp(op);
+            Temp temp2=new Temp(op);
+            Temp temp3=new Temp(op);
+            int index2=((ArraySymbol)inttable.get(op.getContent())).getLevel2();
+            emit(new midCode(midCode.operation.MULTOP,temp1.toString(),oneindex.reduce().toString(),String.valueOf(index2)));
+            emit(new midCode(midCode.operation.PLUSOP,temp2.toString(),temp1.toString(),twoindex.reduce().toString()));
+            emit(new midCode(midCode.operation.GETARRAY,temp3.toString(),op.getContent(),temp2.reduce().toString()));
+            return temp3;
+        }
+    }
+
+
     //    public Array( Word op,  Expr oneindex,Expr onelevel, Expr twolevel, Expr twoindex) {
 //        super( op);
 //        this.oneindex = oneindex;
