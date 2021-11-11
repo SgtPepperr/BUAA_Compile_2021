@@ -1,5 +1,8 @@
 package AST;
 
+import Midcode.midCode;
+import Symbol_table.IntergerTable;
+
 import java.util.ArrayList;
 
 public class Func extends Node{
@@ -22,5 +25,14 @@ public class Func extends Node{
         this.paras = paras;
         this.block = block;
         this.isMain = isMain;
+    }
+
+    @Override
+    public void gen() {
+       inttable=new IntergerTable(inttable);   //创建新作用域
+        emit(new midCode(midCode.operation.PARAM,id.getcontent()));
+        for(Fparam p:paras)
+            p.gen();
+        block.gen(1);
     }
 }

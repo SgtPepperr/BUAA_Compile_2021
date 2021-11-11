@@ -24,7 +24,7 @@ public class ConstDef extends Def{
 
         if(lval instanceof Id){
             int value=IniValue.get(0);
-            emit(new midCode(midCode.operation.CONST,name,null,String.valueOf(value)));                //常数情况
+            emit(new midCode(midCode.operation.CONST,name,String.valueOf(value),null));                //常数情况
             inttable.add(name,new VarSymbol(name,true,value));
         }else if(lval instanceof Array){
              Array arr= (Array) lval;
@@ -36,14 +36,14 @@ public class ConstDef extends Def{
                  for(int i=0;i<IniVal.size();i++){
                      emit(new midCode(midCode.operation.PUTARRAY,name,String.valueOf(i),String.valueOf(IniValue.get(i))));
                  }
-                 inttable.add(name,new ArraySymbol(name,true,1,level1,IniValue));
+                 inttable.add(name,new ArraySymbol(name,true,1,IniValue));
              }else{                                                     //二维数组情况
                  int level2=expr2.calculate();
                  emit(new midCode(midCode.operation.ARRAY,name,String.valueOf(level1),String.valueOf(level2)));
                  for(int i=0;i<IniVal.size();i++){
                      emit(new midCode(midCode.operation.PUTARRAY,name,String.valueOf(i),String.valueOf(IniValue.get(i))));      //输出中间代码
                  }
-                 inttable.add(name,new ArraySymbol(name,true,1,level1,level2,IniValue));        //载入符号表
+                 inttable.add(name,new ArraySymbol(name,true,2,level2,IniValue));        //载入符号表
              }
         }else{
             System.out.print("--------------defwrong-----------");

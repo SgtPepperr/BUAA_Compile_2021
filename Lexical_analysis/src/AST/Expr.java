@@ -18,12 +18,21 @@ public class Expr extends Stmt {
     }
 
     @Override
+    public void gen() {
+       reduce();
+    }
+
+    @Override
     public String toString() {
         return op.toString();
     }
 
     public int calculate() {
         return 0;
+    }
+
+    public String getcontent(){
+        return op.getContent();
     }
     //    public Expr reduce() {
 //        return this;

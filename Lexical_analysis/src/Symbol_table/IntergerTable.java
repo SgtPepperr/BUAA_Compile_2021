@@ -10,6 +10,11 @@ public class IntergerTable {
     private IntergerTable out=null;
 
     public IntergerTable() {
+
+    }
+
+    public IntergerTable(IntergerTable out) {
+        this.out = out;
     }
 
     public HashMap<String, NorSymbol> getMaps() {

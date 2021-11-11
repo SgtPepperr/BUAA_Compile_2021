@@ -24,7 +24,7 @@ public class VarDef extends Def {
                 emit(new midCode(midCode.operation.VAR, name, null, null));                //常数情况
             } else {
                 Expr expr = InitVal.get(0).get(0);
-                emit(new midCode(midCode.operation.VAR, name, null, expr.reduce().toString()));                //常数情况
+                emit(new midCode(midCode.operation.VAR, name, expr.reduce().toString(),null));                //常数情况
             }
         } else if (lval instanceof Array) {
             Array arr = (Array) lval;
@@ -34,11 +34,11 @@ public class VarDef extends Def {
             int level2=0;
             if (expr2 == null) {                                                                             //一维数组情况
                 emit(new midCode(midCode.operation.ARRAY, name, String.valueOf(level1), null));
-                inttable.add(name, new ArraySymbol(name, true, 1, level1));
+                inttable.add(name, new ArraySymbol(name, true, 1));
             } else {                                                     //二维数组情况
                 level2 = expr2.calculate();
                 emit(new midCode(midCode.operation.ARRAY, name, String.valueOf(level1), String.valueOf(level2)));
-                inttable.add(name, new ArraySymbol(name, true, 1, level1, level2));        //载入符号表
+                inttable.add(name, new ArraySymbol(name, true, 2, level2));        //载入符号表
             }
                 for (int i=0;i<InitVal.size();i++) {
                     for (int j = 0; j < InitVal.get(i).size(); j++) {
