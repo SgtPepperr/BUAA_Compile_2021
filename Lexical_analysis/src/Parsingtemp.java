@@ -29,12 +29,13 @@ public class Parsingtemp {
         CompUnit();
         root.gen();
         midCodes=root.getMidCodes();
+        midCodes.add(new midCode(midCode.operation.EXIT,null));
         outputMidcode();
     }
 
     public void outputMidcode() {
         for (int i = 0; i < midCodes.size(); i++) {
-            System.out.print(midCodes.get(i).toString());
+            System.out.println(midCodes.get(i).toString());
         }
     }
 
@@ -205,7 +206,6 @@ public class Parsingtemp {
         Expr expr1 = null;
         Expr expr2 = null;
         ArrayList<ArrayList<Expr>> exprs = new ArrayList<>();
-        exprs.add(new ArrayList<Expr>());
         if (w.getSymnumber() == 1) {
             int count = 0;                       //记录层次信息
             while (showWord().getContent().equals("[")) {
@@ -243,11 +243,11 @@ public class Parsingtemp {
 
     private void InitVal(ArrayList<ArrayList<Expr>> exprs,int level) {
         if (showWord().getContent().equals("{")) {
+            if(level==1)
+                exprs.add(new ArrayList<>());
             getWord();
             if (showWord().getContent().equals("}")) {
                 getWord();
-                if(level==2)
-                    exprs.add(new ArrayList<>());
             } else {
                 InitVal(exprs,level+1);
                 while (showWord().getContent().equals(",")) {
@@ -257,10 +257,11 @@ public class Parsingtemp {
                 if (!getWord().getContent().equals("}")) {
                     error();
                 }
-                if(level==2)
-                    exprs.add(new ArrayList<>());
             }
         } else {
+            if(exprs.size()==0){
+                exprs.add(new ArrayList<>());
+            }
             exprs.get(exprs.size()-1).add(Exp());
         }
 //        System.out.print("<InitVal>\n");
@@ -294,7 +295,7 @@ public class Parsingtemp {
         getWord();
         getWord();
         Block block=Block();
-        return new Func(1,null,null,block,true);
+        return new Func(1,new Id(new Word("main")),new ArrayList<>(),block,true);
 //        System.out.print("<MainFuncDef>\n");
     }
 
@@ -350,9 +351,15 @@ public class Parsingtemp {
         if (showWord().getContent().equals("}")) {
             getWord();
         } else {
-            items.add(BlockItem());
+            BlockItem item=BlockItem();
+            if(item!=null) {
+                items.add(item);
+            }
             while (!showWord().getContent().equals("}")) {
-                items.add(BlockItem());
+                item=BlockItem();
+                if(item!=null) {
+                    items.add(item);
+                }
             }
             getWord();
         }
@@ -507,9 +514,9 @@ public class Parsingtemp {
             flag++;
             getWord();
 
-            if (flag == 0)
+            if (flag == 1)
                 exp1 = Exp();
-            else if (flag == 1)
+            else if (flag == 2)
                 exp2 = Exp();
 
             if (!getWord().getContent().equals("]")) {

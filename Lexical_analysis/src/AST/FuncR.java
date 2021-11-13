@@ -5,7 +5,7 @@ import Word.Word;
 
 import java.util.ArrayList;
 
-public class FuncR extends Expr{
+public class FuncR extends Expr {
     ArrayList<Expr> Rparas;
 
     public FuncR(Word op, ArrayList<Expr> rparas) {
@@ -15,11 +15,23 @@ public class FuncR extends Expr{
 
     @Override
     public Expr reduce() {
-        for(Expr e:Rparas){
-            emit(new midCode(midCode.operation.PUSH,e.reduce().toString()));
+        for (Expr e : Rparas) {
+            emit(new midCode(midCode.operation.PUSH, e.reduce().toString()));
         }
         emit(new midCode(midCode.operation.CALL, op.getContent()));
-        return this;
+        int type = funcTable.get(op.getContent()).getReturntype();
+        if (type == 0)
+            return this;
+        else{
+            Temp t=new Temp(op);
+            emit(new midCode(midCode.operation.RETVALUE,t.toString()));
+            return t;
+        }
+    }
+
+    @Override
+    public void gen() {
+        reduce();
     }
 
     @Override

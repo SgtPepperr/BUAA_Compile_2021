@@ -1,7 +1,8 @@
 package Midcode;
 
 public class midCode {
-    public enum operation{
+    public enum operation {
+        MAIN,   //主函数进入入口
         PLUSOP, //+
         MINUOP, //-
         MULTOP, //*
@@ -36,9 +37,9 @@ public class midCode {
     }
 
     operation op;       //操作符
-    String z;           //结果
-    String x;           //左操作符
-    String y;           //右操作符
+    String z = null;           //结果
+    String x = null;           //左操作符
+    String y = null;           //右操作符
 
     public midCode(operation op, String z, String x, String y) {
         this.op = op;
@@ -62,17 +63,15 @@ public class midCode {
     public String toString() {
         switch (op) {
             case PLUSOP:
-                return z+"="+x+"+"+y;
+                return z + " = " + x + " + " + y;
             case MINUOP:
-                return z+"="+x+"-"+y;
+                return z + " = " + x + " - " + y;
             case MULTOP:
-                return z+"="+x+"*"+y;
+                return z + " = " + x + " * " + y;
             case DIVOP:
-                return z+"="+x+"/"+y;
+                return z + " = " + x + " / " + y;
             case MODOP:
-                return z+"="+x+"%"+y;
-            default:
-                return "";
+                return z + " = " + x + " % " + y;
 //            case LSSOP:
 //                midCodefile << mc.z << " = (" << mc.x << " < " << mc.y << ")\n";
 //                break;
@@ -91,9 +90,8 @@ public class midCode {
 //            case NEQOP:
 //                midCodefile << mc.z << " = (" << mc.x << " != " << mc.y << ")\n";
 //                break;
-//            case ASSIGNOP:
-//                midCodefile << mc.z << " = " << mc.x << "\n";
-//                break;
+            case ASSIGNOP:
+                return z + " = " + x;
 //            case GOTO:
 //                midCodefile << "GOTO " << mc.z << "\n";
 //                break;
@@ -103,53 +101,60 @@ public class midCode {
 //            case BNZ:
 //                midCodefile << "BNZ " << mc.z << "(" << mc.x << "=1)" << "\n";
 //                break;
-//            case PUSH:
-//                midCodefile << "PUSH " << mc.z << "\n";
-//                break;
-//            case CALL:
-//                midCodefile << "CALL " << mc.z << "\n";
-//                break;
-//            case RET:
-//                midCodefile << "RET " << mc.z << "\n";
-//                break;
-//            case RETVALUE:
-//                midCodefile << "RETVALUE " << mc.z << " = " << mc.x << "\n";
-//                break;
-//            case SCAN:
-//                midCodefile << "SCAN " << mc.z << "\n";
-//                break;
-//            case PRINT:
-//                midCodefile << "PRINT " << mc.z << " " << mc.x << "\n";
-//                break;
-//            case LABEL:
-//                midCodefile << mc.z << ": \n";
-//                break;
-//			/*case CONST:
-//				midCodefile << "CONST " << mc.z << " " << mc.x << " = " << mc.y << endl;
-//				break;
-//			case ARRAY:
-//				midCodefile << "ARRAY " << mc.z << " " << mc.x << "[" << mc.y << "]" << endl;
-//				break;
-//			case VAR:
-//				midCodefile << "VAR " << mc.z << " " << mc.x << endl;
-//				break;*/
-//            case FUNC:
-//                midCodefile << "FUNC " << mc.z << " " << mc.x << "()" << endl;
-//                break;
-//            case PARAM:
-//                midCodefile << "PARA " << mc.z << " " << mc.x << endl;
-//                break;
-//            case GETARRAY:
-//                midCodefile << mc.z << " = " << mc.x << "[" << mc.y << "]\n";
-//                break;
-//            case PUTARRAY:
-//                midCodefile << mc.z << "[" << mc.x << "]" << " = " << mc.y << "\n";
-//                break;
-//            case EXIT:
-//                midCodefile << "EXIT\n";
-//                break;
-//            default:
-//                break;
+            case PUSH:
+                return "push " + z;
+            case CALL:
+                return "call " + z;
+            case RET:
+                if (z != null)
+                    return "RET  " + z;
+                else
+                    return "RET null";
+            case RETVALUE:
+                return "retvalue "+z;
+            case SCAN:
+                return "scan " + z;
+            case PRINT:
+                if (x.equals("string"))
+                    return "print \"" + z + "\"";
+                else
+                    return "print " + z;
+            case LABEL:
+                return  "\nLABEL " + z + " " + x + ":\n";
+            case CONST:
+                return "const int " + z + " = " + x;
+            case ARRAY:
+                if (y == null) {
+                    return "array int " + z + "[" + x + "]";
+                } else {
+                    return "array int " + z + "[" + x + "]" + "[" + y + "]";
+                }
+            case VAR:
+                if (x == null) {
+                    return "var int " + z;
+                } else {
+                    return "var int" + z + " = " + x;
+                }
+            case FUNC:
+                return x + " " + z + "( )";
+            case PARAM:
+                if (x.equals("0")) {
+                    return "para int " + z;
+                } else if (x.equals("1")) {
+                    return "para int " + z + "[]";
+                } else {
+                    return "para int " + z + "[][" + y + "]";
+                }
+            case MAIN:
+                return "\nMAIN\n";
+            case GETARRAY:
+                return z + " = " + x + "[" + y + "]";
+            case PUTARRAY:
+                return z + "[" + x + "] = " + y;
+            case EXIT:
+                return "\n-----------------EXIT--------------\n";
+            default:
+                return null;
         }
     }
 }

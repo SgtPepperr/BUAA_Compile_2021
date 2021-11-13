@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Print extends Stmt {
     Word format;
     ArrayList<Expr> exprs;
-    ArrayList<String> strings;
+    ArrayList<String> strings=new ArrayList<>();
 
     public Print(Word format, ArrayList<Expr> exprs) {
         this.format = format;
@@ -21,24 +21,24 @@ public class Print extends Stmt {
         Initial(format.getContent());
         for(String s:strings){
             if(!s.equals("%d")){
-                emit(new midCode(midCode.operation.PRINT,s));
+                emit(new midCode(midCode.operation.PRINT,s,"string"));
             }else{
-                emit(new midCode(midCode.operation.PRINT,exprs.get(i++).reduce().toString()));
+                emit(new midCode(midCode.operation.PRINT,exprs.get(i++).reduce().toString(),"digit"));
             }
         }
     }
 
     public void Initial(String s) {
-        int first = 0;
-        int last = 0;
+        int first = 1;
+        int last = 1;                      //词法分析中多读入了一个“,因此在这里将其跳过
         while (last < s.length()) {
-            if (s.indexOf(last) == '%' && s.indexOf(last + 1) == 'd') {
+            if (s.charAt(last) == '%' && s.charAt(last + 1) == 'd') {
                 if (last != first) {
                     strings.add(s.substring(first, last));
                 }
                 strings.add("%d");
-                first += 2;
-                last = first;
+                last += 2;
+                first = last;
             }
             last++;
         }

@@ -19,7 +19,7 @@ public class Expr extends Stmt {
 
     @Override
     public void gen() {
-       reduce();
+       //reduce();
     }
 
     @Override

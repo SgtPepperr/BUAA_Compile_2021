@@ -13,6 +13,10 @@ public class FuncSymbol {
         this.returntype = returntype;
     }
 
+    public FuncSymbol(int returntype) {
+        this.returntype = returntype;
+    }
+
     public String getName() {
         return name;
     }
