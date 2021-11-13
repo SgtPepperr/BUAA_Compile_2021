@@ -11,6 +11,10 @@ public class Ret extends Stmt {
 
     @Override
     public void gen() {
-     emit(new midCode(midCode.operation.RET,expr.reduce().toString()));
+        if(expr==null){
+            emit(new midCode(midCode.operation.RET,null));
+        }else{
+            emit(new midCode(midCode.operation.RET,expr.reduce().toString()));
+        }
     }
 }

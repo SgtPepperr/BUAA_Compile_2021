@@ -26,11 +26,15 @@ public class Block extends Stmt {
     }
 
     public void gen(int k){
-        num=++count;
-        emit(new midCode(midCode.operation.LABEL,String.valueOf(num),"start"));
+        num=k;
         for(BlockItem i:items)
             i.gen();
+        emit(new midCode(midCode.operation.RET,null));
         emit(new midCode(midCode.operation.LABEL,String.valueOf(num),"end"));
         inttable=inttable.getOut();
+    }
+
+    public static int getCount() {
+        return ++count;
     }
 }

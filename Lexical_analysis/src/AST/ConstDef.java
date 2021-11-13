@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ConstDef extends Def{
     ArrayList<Expr> IniVal;
-    ArrayList<Integer> IniValue;
+    ArrayList<Integer> IniValue=new ArrayList<>();
 
     public ConstDef(Lval lval, ArrayList<Expr> iniVal) {
         super(lval);
@@ -17,7 +17,7 @@ public class ConstDef extends Def{
 
     @Override
     public void gen() {
-        for(int i=0;i<IniValue.size();i++){
+        for(int i=0;i<IniVal.size();i++){
             IniValue.add(IniVal.get(i).calculate());    //计算每一个初始值，并存入另一个数组中
         }
         String name=lval.op.getContent();

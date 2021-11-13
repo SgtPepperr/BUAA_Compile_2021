@@ -3,11 +3,14 @@ package AST;
 
 import Midcode.midCode;
 import java.util.ArrayList;
+
+import Symbol_table.FuncTable;
 import Symbol_table.IntergerTable;
 
 public class Node {
     public static ArrayList<midCode> midCodes=new ArrayList<>();
     public static IntergerTable inttable=new IntergerTable();
+    public static FuncTable funcTable=new FuncTable();
     static int labels=0;
 
 

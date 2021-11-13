@@ -1,20 +1,22 @@
 package AST;
 
 import Midcode.midCode;
+import Symbol_table.IntergerTable;
 import Symbol_table.Symbols.ArraySymbol;
 import Word.Word;
 
 import java.util.ArrayList;
 
 public class Array extends Lval {
-    private int onelevel=0;
-    private int twolevel=0;
-    private Expr oneindex=null;
-    private Expr twoindex=null;
+    private int onelevel = 0;
+    private int twolevel = 0;
+    private int fact = 0;
+    private Expr oneindex = null;
+    private Expr twoindex = null;
     private Expr temp;
 
-    public Array( Word op, Expr oneindex, Expr twoindex) {
-        super( op);
+    public Array(Word op, Expr oneindex, Expr twoindex) {
+        super(op);
         this.twoindex = twoindex;
         this.oneindex = oneindex;
     }
@@ -24,9 +26,24 @@ public class Array extends Lval {
         this.oneindex = oneindex;
     }
 
-    public int calculate(int k1,int k2) {
-        ArraySymbol sym= (ArraySymbol) inttable.get(op.getContent());
-        return sym.getValue(k1*sym.getLevel2()+k2);
+    public int calculate() {
+        IntergerTable table=inttable;
+        ArraySymbol sym=null;
+        while(table!=null){
+            if(table.contains(op.getContent())){
+                sym = (ArraySymbol) table.get(op.getContent());
+                break;
+            }
+            table=table.getOut();
+        }
+        int k1 = 0, k2 = 0;
+        if (twoindex == null) {
+            k2 = oneindex.calculate();
+        } else {
+            k1 = oneindex.calculate();
+            k2 = twoindex.calculate();
+        }
+        return sym.getValue(k1 * sym.getLevel2() + k2);
     }
 
     public Expr getOneindex() {
@@ -35,6 +52,61 @@ public class Array extends Lval {
 
     public Expr getTwoindex() {
         return twoindex;
+    }
+
+    @Override
+    public Expr reduce() {
+        if (twoindex == null) {
+            Temp temp = new Temp(op);
+            emit(new midCode(midCode.operation.GETARRAY, temp.toString(), op.getContent(), oneindex.reduce().toString()));
+            return temp;
+        } else {
+            Temp temp1 = new Temp(op);
+            Temp temp2 = new Temp(op);
+            Temp temp3 = new Temp(op);
+
+            IntergerTable table=inttable;
+            ArraySymbol sym=null;
+            while(table!=null){
+                if(table.contains(op.getContent())){
+                    sym = (ArraySymbol) table.get(op.getContent());
+                    break;
+                }
+                table=table.getOut();
+            }
+
+            int index2 = sym.getLevel2();
+            emit(new midCode(midCode.operation.MULTOP, temp1.toString(), oneindex.reduce().toString(), String.valueOf(index2)));
+            emit(new midCode(midCode.operation.PLUSOP, temp2.toString(), temp1.toString(), twoindex.reduce().toString()));
+            emit(new midCode(midCode.operation.GETARRAY, temp3.toString(), op.getContent(), temp2.reduce().toString()));
+            return temp3;
+        }
+    }
+
+    @Override
+    public String toString() {                      //数组被赋值等情况时，返回实际的Index
+        if (twoindex == null) {
+            return oneindex.reduce().toString();
+        } else {
+            Temp temp1 = new Temp(op);
+            Temp temp2 = new Temp(op);
+
+            IntergerTable table=inttable;
+            ArraySymbol sym=null;
+            while(table!=null){
+                if(table.contains(op.getContent())){
+                    sym = (ArraySymbol) table.get(op.getContent());
+                    break;
+                }
+                table=table.getOut();
+            }
+
+            int index2 = sym.getLevel2();
+
+            emit(new midCode(midCode.operation.MULTOP, temp1.toString(), oneindex.reduce().toString(), String.valueOf(index2)));
+            emit(new midCode(midCode.operation.PLUSOP, temp2.toString(), temp1.toString(), twoindex.reduce().toString()));
+            return temp2.toString();
+        }
     }
 
     //    public Array( Word op,  Expr oneindex,Expr onelevel, Expr twolevel, Expr twoindex) {

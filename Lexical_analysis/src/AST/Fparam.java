@@ -18,7 +18,7 @@ public class Fparam extends Node {
     public void gen() {
         String s=id.getcontent();
         if(level==0){
-            emit(new midCode(midCode.operation.PARAM,s));
+            emit(new midCode(midCode.operation.PARAM,s,String.valueOf("0")));
         }else if(level==1){
             emit(new midCode(midCode.operation.PARAM,s,String.valueOf("1")));
             inttable.add(s,new ArraySymbol(s,false,1));
