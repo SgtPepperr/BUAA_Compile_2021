@@ -26,6 +26,9 @@ public class ArraySymbol extends NorSymbol {
         this.level2=level2;
     }
 
+    public ArraySymbol(String name, int offset) {
+        super(name, offset);
+    }
 
     public ArraySymbol(String name, boolean isConst, int level) {
         super(name, isConst, level);

@@ -36,10 +36,10 @@ public class midCode {
         DEBUG,
     }
 
-    operation op;       //操作符
-    String z = null;           //结果
-    String x = null;           //左操作符
-    String y = null;           //右操作符
+    public operation op;       //操作符
+    public String z = null;           //结果
+    public String x = null;           //左操作符
+    public String y = null;           //右操作符
 
     public midCode(operation op, String z, String x, String y) {
         this.op = op;

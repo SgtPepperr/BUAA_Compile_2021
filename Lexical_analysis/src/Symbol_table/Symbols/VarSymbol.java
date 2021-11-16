@@ -11,6 +11,9 @@ public class VarSymbol extends NorSymbol {
         super(name,isConst);
     }
 
+    public VarSymbol(String name, int offset) {
+        super(name, offset);
+    }
 
     public int getValue() {
         return value;

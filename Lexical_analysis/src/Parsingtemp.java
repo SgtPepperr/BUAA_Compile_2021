@@ -15,6 +15,7 @@ public class Parsingtemp {
     }
 
     private ArrayList<midCode> midCodes=new ArrayList<>();
+    private LinkedList<String> strings=new LinkedList<>();
     private Program root;
     private ArrayList<Word> words;
     private int label = 0;           //区分不同基本块标签
@@ -25,11 +26,20 @@ public class Parsingtemp {
         this.words = words;
     }
 
+    public ArrayList<midCode> getMidCodes() {
+        return midCodes;
+    }
+
+    public LinkedList<String> getStrings() {
+        return strings;
+    }
+
     public void analyse() {
         CompUnit();
         root.gen();
         midCodes=root.getMidCodes();
         midCodes.add(new midCode(midCode.operation.EXIT,null));
+        strings=root.getStringss();
         outputMidcode();
     }
 

@@ -22,8 +22,10 @@ public class Print extends Stmt {
         for(String s:strings){
             if(!s.equals("%d")){
                 emit(new midCode(midCode.operation.PRINT,s,"string"));
+                stringss.add(s);
             }else{
                 emit(new midCode(midCode.operation.PRINT,exprs.get(i++).reduce().toString(),"digit"));
+                //stringss.add(s);
             }
         }
     }

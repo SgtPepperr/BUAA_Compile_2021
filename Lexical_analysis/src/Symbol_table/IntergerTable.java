@@ -8,9 +8,18 @@ import java.util.HashMap;
 public class IntergerTable {
     private HashMap<String, NorSymbol> maps=new HashMap<>();
     private IntergerTable out=null;
+    private int contentlength=0;
 
     public IntergerTable() {
 
+    }
+
+    public void addlength(int len){
+        contentlength+=len;
+    }
+
+    public int getContentlength() {
+        return contentlength;
     }
 
     public IntergerTable(IntergerTable out) {

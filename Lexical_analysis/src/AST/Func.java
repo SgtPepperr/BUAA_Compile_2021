@@ -38,7 +38,7 @@ public class Func extends Node {
         int k=Block.getCount();
         emit(new midCode(midCode.operation.LABEL,String.valueOf(k),"start"));
         if (isMain) {
-            emit(new midCode(midCode.operation.MAIN, ""));
+            emit(new midCode(midCode.operation.MAIN, "main"));
         } else {
             emit(new midCode(midCode.operation.FUNC, id.getcontent(), type));
             for (Fparam p : paras)

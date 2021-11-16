@@ -5,6 +5,7 @@ public class NorSymbol {
     private boolean isConst;
     private int level=0;
     private int line=0;
+    private int offset=0;
 
     public NorSymbol() {
     }
@@ -17,6 +18,15 @@ public class NorSymbol {
         this.name = name;
         this.isConst=isConst;
         this.level=level;
+    }
+
+    public NorSymbol(String name, int offset) {
+        this.name = name;
+        this.offset = offset;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 
     public String getName() {

@@ -1,3 +1,5 @@
+import Mipscode.Mips;
+
 import java.io.*;
 
 public class Compiler {
@@ -50,6 +52,8 @@ public class Compiler {
         Parsing parsing=new Parsing(sym.getWords());
         Parsingtemp parsingtemp=new Parsingtemp(sym.getWords());
         parsingtemp.analyse();
+
+        Mips mips=new Mips(parsingtemp.getMidCodes(), parsingtemp.getStrings());
 //        try {
 //            Scanner in = new Scanner(new FileReader(inputpath));
 //            while (in.hasNextLine()) {
