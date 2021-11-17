@@ -133,7 +133,7 @@ public class midCode {
                 if (x == null) {
                     return "var int " + z;
                 } else {
-                    return "var int" + z + " = " + x;
+                    return "var int " + z + " = " + x;
                 }
             case FUNC:
                 return x + " " + z + "( )";

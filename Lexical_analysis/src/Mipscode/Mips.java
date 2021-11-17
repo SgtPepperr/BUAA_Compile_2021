@@ -17,7 +17,7 @@ public class Mips {
 
     private ArrayList<midCode> midCodes;
     private LinkedList<String> strings;
-    private ArrayList<Mipscode> mipscodes=new ArrayList<Mipscode>();
+    private ArrayList<Mipscode> mipscodes = new ArrayList<Mipscode>();
     private IntergerTable intable = new IntergerTable();
     private FuncTable funcTable = new FuncTable();
     private boolean intofunc = false;
@@ -100,17 +100,20 @@ public class Mips {
     }
 
     void loadnormal(String name, int len) {
+        funcpointer += len - 1;
         intable.add(name, new ArraySymbol(name, funcpointer));
 //        intable.addlength(4 * len);
-        funcpointer += len;
+        funcpointer += 1;
     }
 
-    void loadValue(String name, String regName) {
+    void loadValue(String name, String regName, boolean tableable) {             //第三个参数用来判断能否在当前作用域产生对应新符号
 //        loadnormal(name);
         if (Character.isDigit(name.charAt(0))) {
-            mipscodes.add(new Mipscode(Mipscode.operation.li, regName, name));
+            mipscodes.add(new Mipscode(Mipscode.operation.li, regName, "", "", Integer.parseInt(name)));
         } else {
-            loadnormal(name);
+            if (tableable) {
+                loadnormal(name);
+            }
             boolean global = inglobal(name);
             int offset = findoffset(name);
             if (global) {
@@ -121,8 +124,10 @@ public class Mips {
         }
     }
 
-    void storeValue(String name, String regName) {
-        loadnormal(name);
+    void storeValue(String name, String regName, boolean tableable) {
+        if (tableable) {
+            loadnormal(name);
+        }
         boolean global = inglobal(name);
         int offset = findoffset(name);
         if (global) {
@@ -130,6 +135,12 @@ public class Mips {
         } else {
             mipscodes.add(new Mipscode(Mipscode.operation.sw, regName, "$fp", "", -4 * offset));
         }
+    }
+
+    boolean istemp(String s) {
+        if(s.length()<2)
+            return false;
+        return s.charAt(1) == '&';
     }
 
 
@@ -141,53 +152,52 @@ public class Mips {
         }
         mipscodes.add(new Mipscode(Mipscode.operation.textSeg, ""));
         //      mipscodes.add(new Mipscode(Mipscode.operation.li, "$gp", "0x10040000"));
-        mipscodes.add(new Mipscode(Mipscode.operation.j, "main"));                  //定义堆底位置，跳转主函数
 
         for (int i = 0; i < midCodes.size(); i++) {
             midCode mc = midCodes.get(i);
             if (mc.op.equals(midCode.operation.PLUSOP)) {
-                loadValue(mc.x, "$t0");
-                loadValue(mc.y, "$t1");
-                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "t0", "t1"));
+                loadValue(mc.x, "$t0", false);
+                loadValue(mc.y, "$t1", false);
+                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t0", "$t1"));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t2");
+                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.MINUOP)) {
-                loadValue(mc.x, "$t0");
-                loadValue(mc.y, "$t1");
-                mipscodes.add(new Mipscode(Mipscode.operation.sub, "$t2", "t0", "t1"));
+                loadValue(mc.x, "$t0", false);
+                loadValue(mc.y, "$t1", false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sub, "$t2", "$t0", "$t1"));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t2");
+                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.MULTOP)) {
-                loadValue(mc.x, "$t0");
-                loadValue(mc.y, "$t1");
+                loadValue(mc.x, "$t0", false);
+                loadValue(mc.y, "$t1", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t2");
+                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.DIVOP)) {
-                loadValue(mc.x, "$t0");
-                loadValue(mc.y, "$t1");
+                loadValue(mc.x, "$t0", false);
+                loadValue(mc.y, "$t1", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.divop, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t2");
+                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.MODOP)) {
-                loadValue(mc.x, "$t0");
-                loadValue(mc.y, "$t1");
+                loadValue(mc.x, "$t0", false);
+                loadValue(mc.y, "$t1", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.divop, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t2");
+                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.ASSIGNOP)) {
-                loadValue(mc.x, "$t0");
+                loadValue(mc.x, "$t0", false);
 //                loadnormal(mc.z);
-                storeValue(mc.z, "t0");
+                storeValue(mc.z, "$t0", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.PUSH)) {
                 pushOpstcak.add(mc);
             } else if (mc.op.equals(midCode.operation.CALL)) {
                 for (int j = 0; j < pushOpstcak.size(); j++) {
                     midCode mcs = pushOpstcak.get(j);
-                    loadValue(mcs.z, "$t0");
+                    loadValue(mcs.z, "$t0", false);
                     mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$sp", "", -4 * j));
                 }
                 pushOpstcak.clear();
@@ -206,13 +216,13 @@ public class Mips {
                 } else {
                     if (mc.z != null) {
 //                    loadnormal(mc.z);
-                        loadValue(mc.z, "$v0");
+                        loadValue(mc.z, "$v0", false);
                     }
                     mipscodes.add(new Mipscode(Mipscode.operation.jr, "$ra"));
                 }
             } else if (mc.op.equals(midCode.operation.RETVALUE)) {
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$v0");
+                storeValue(mc.z, "$v0", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.PRINT)) {
                 if (mc.x.equals("string")) {
                     String addr = stringHashMap.get(mc.z);
@@ -221,7 +231,7 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.syscall, "", "", ""));
                 } else {
 //                    loadnormal(mc.z);
-                    loadValue(mc.z, "$a0");
+                    loadValue(mc.z, "$a0", false);
                     mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 1));
                     mipscodes.add(new Mipscode(Mipscode.operation.syscall, null));
                 }
@@ -229,7 +239,7 @@ public class Mips {
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 5));
                 mipscodes.add(new Mipscode(Mipscode.operation.syscall, null));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$v0");
+                storeValue(mc.z, "$v0", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.LABEL)) {
                 if (mc.x.equals("start")) {
                     intable = new IntergerTable(intable);
@@ -238,33 +248,39 @@ public class Mips {
                     intable = intable.getOut();
                 }
             } else if (mc.op.equals(midCode.operation.FUNC)) {
+                if (!intofunc) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.j, "main"));                  //定义堆底位置，跳转主函数
+                    intofunc = true;
+                }
                 mipscodes.add(new Mipscode(Mipscode.operation.label, mc.z));
                 funcpointer = 0;
             } else if (mc.op.equals(midCode.operation.PARAM)) {
                 loadnormal(mc.z);
             } else if (mc.op.equals(midCode.operation.GETARRAY)) {
+                //midCodefile << mc.z << " = " << mc.x << "[" << mc.y << "]\n";
                 //loadnormal(mc.z);
-                loadValue(mc.y, "$t0");
+                loadValue(mc.y, "$t0", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", "$t0", "", 2));
-                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$gp"));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", findoffset(mc.x)));
-                storeValue(mc.z, "$t2");
+                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$fp"));
+                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", -4 * findoffset(mc.x)));
+                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.PUTARRAY)) {
-                loadValue(mc.y, "$t0");
-                loadValue(mc.x, "$t1");
+                //midCodefile << mc.z << "[" << mc.x << "]" << " = " << mc.y << "\n";
+                loadValue(mc.y, "$t0", false);
+                loadValue(mc.x, "$t1", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t1", "$t1", "", 2));
-                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$gp"));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
+                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$fp"));
+                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
             } else if (mc.op.equals(midCode.operation.CONST)) {
-                mipscodes.add(new Mipscode(Mipscode.operation.li, "$t0", "", "", Integer.parseInt(mc.x)));
-                storeValue(mc.z, "$t0");
+                loadValue(mc.x, "$t0", false);
+                storeValue(mc.z, "$t0", true);
             } else if (mc.op.equals(midCode.operation.EXIT)) {
-                mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 10));
-                mipscodes.add(new Mipscode(Mipscode.operation.syscall, ""));
+//                mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 10));
+//                mipscodes.add(new Mipscode(Mipscode.operation.syscall, ""));
             } else if (mc.op.equals(midCode.operation.VAR)) {
                 if (mc.x != null) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.li, "$t0", "", "", Integer.parseInt(mc.x)));
-                    storeValue(mc.z, "$t0");
+                    loadValue(mc.x, "$t0", false);
+                    storeValue(mc.z, "$t0", true);
                 } else {
                     loadnormal(mc.z);
                 }
@@ -279,6 +295,10 @@ public class Mips {
                 }
                 loadnormal(mc.z, k);
             } else if (mc.op.equals(midCode.operation.MAIN)) {
+                if (!intofunc) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.j, "main"));                  //定义堆底位置，跳转主函数
+                    intofunc = true;
+                }
                 intomain = true;
                 mipscodes.add(new Mipscode(Mipscode.operation.label, mc.z));
                 funcpointer = 0;
@@ -291,8 +311,8 @@ public class Mips {
         }
     }
 
-    public void outputMipscode(){
-        String outputpath="mipscode.txt";
+    public void outputMipscode() {
+        String outputpath = "mips.txt";
         PrintStream out = null;
         try {
             out = new PrintStream(outputpath);
@@ -302,90 +322,75 @@ public class Mips {
         System.setOut(out);    //调整输出路径为mips文件
 
 
-        for(int i=0;i< mipscodes.size();i++){
-            Mipscode mc= mipscodes.get(i);
-            switch (mc.op){
-                case add -> {
-                    System.out.println("add "+mc.z+","+mc.x+","+mc.y);
+        for (int i = 0; i < mipscodes.size(); i++) {
+            Mipscode mc = mipscodes.get(i);
+            switch (mc.op) {
+                case add:
+                    System.out.println("add " + mc.z + "," + mc.x + "," + mc.y);
                     break;
-                }
-                case sub -> {
-                    System.out.println("sub "+mc.z+","+mc.x+","+mc.y);
+                case sub:
+                    System.out.println("sub " + mc.z + "," + mc.x + "," + mc.y);
                     break;
-                }
-                case mult -> {
-                    System.out.println("mult "+mc.z+","+mc.x);
+                case mult:
+                    System.out.println("mult " + mc.z + "," + mc.x);
                     break;
-                }
-                case divop -> {
-                    System.out.println("div "+mc.z+","+mc.x);
+                case divop:
+                    System.out.println("div " + mc.z + "," + mc.x);
                     break;
-                }
-                case addi -> {
-                    System.out.println("addi "+mc.z+","+mc.x+","+mc.imme);
+                case addi:
+                    System.out.println("addi " + mc.z + "," + mc.x + "," + mc.imme);
                     break;
-                }
-                case mflo -> {
-                    System.out.println("mflo "+mc.z);
+                case mflo:
+                    System.out.println("mflo " + mc.z);
                     break;
-                }
-                case mfhi -> {
-                    System.out.println("mfhi "+mc.z);
+                case mfhi:
+                    System.out.println("mfhi " + mc.z);
                     break;
-                }
-                case j -> {
-                    System.out.println("j "+mc.z);
+                case j:
+                    System.out.println("j " + mc.z);
                     break;
-                }
-                case jal->{
-                    System.out.println("jal "+mc.z);
+                case jal:
+                    System.out.println("jal " + mc.z);
                     break;
-                }
-                case jr->{
-                    System.out.println("jr "+mc.z);
+                case jr:
+                    System.out.println("jr " + mc.z);
                     break;
-                }
-                case lw -> {
-                    System.out.println("lw "+mc.z+","+mc.imme+"("+mc.x+")");
+                case lw:
+                    System.out.println("lw " + mc.z + "," + mc.imme + "(" + mc.x + ")");
                     break;
-                }
-                case sw -> {
-                    System.out.println("sw "+mc.z+","+mc.imme+"("+mc.x+")");
+                case sw:
+                    System.out.println("sw " + mc.z + "," + mc.imme + "(" + mc.x + ")");
                     break;
-                }
-                case syscall -> {
+                case syscall:
                     System.out.println("syscall");
                     break;
-                }
-                case li->{
-                    System.out.println("li "+mc.z+","+mc.imme);
+                case li:
+                    System.out.println("li " + mc.z + "," + mc.imme);
                     break;
-                }
-                case la -> {
-                    System.out.println("la "+mc.z+","+mc.x);
+                case la:
+                    System.out.println("la " + mc.z + "," + mc.x);
                     break;
-                }
-                case moveop -> {
-                    System.out.println("move "+mc.z+","+ mc.x);
+                case moveop:
+                    System.out.println("move " + mc.z + "," + mc.x);
                     break;
-                }
-                case dataSeg -> {
+                case dataSeg:
                     System.out.println(".data");
                     break;
-                }
-                case textSeg -> {
+                case textSeg:
                     System.out.println("\n.text");
                     break;
-                }
-                case asciizSeg -> {
-                    System.out.println(mc.z+": .asciiz \""+mc.x+"\"");
+                case asciizSeg:
+                    System.out.println(mc.z + ": .asciiz \"" + mc.x + "\"");
                     break;
-                }
-                case label -> {
-                    System.out.println("\n"+mc.z+":");
+                case label:
+                    System.out.println("\n" + mc.z + ":");
                     break;
-                }
-                default -> {break;}
+                case sll:
+                    System.out.println("sll " + mc.z + "," + mc.x + "," + mc.imme);
+                    break;
+                default:
+                    System.out.println("-------------------wrong-------------------");
+                    break;
             }
         }
     }

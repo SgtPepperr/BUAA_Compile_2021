@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class FuncR extends Expr {
     ArrayList<Expr> Rparas;
+    ArrayList<String> Rafter=new ArrayList<>();
 
     public FuncR(Word op, ArrayList<Expr> rparas) {
         super(op);
@@ -16,7 +17,10 @@ public class FuncR extends Expr {
     @Override
     public Expr reduce() {
         for (Expr e : Rparas) {
-            emit(new midCode(midCode.operation.PUSH, e.reduce().toString()));
+            Rafter.add(e.reduce().toString());
+        }
+        for(String s:Rafter){
+            emit(new midCode(midCode.operation.PUSH, s));
         }
         emit(new midCode(midCode.operation.CALL, op.getContent()));
         int type = funcTable.get(op.getContent()).getReturntype();

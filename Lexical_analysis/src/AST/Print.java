@@ -41,6 +41,7 @@ public class Print extends Stmt {
                 strings.add("%d");
                 last += 2;
                 first = last;
+                continue;
             }
             last++;
         }
