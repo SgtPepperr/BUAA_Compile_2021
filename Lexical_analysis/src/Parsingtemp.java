@@ -388,31 +388,43 @@ public class Parsingtemp {
 
     private Stmt Stmt() {
         if (showWord().getContent().equals("if")) {
+            Stmt stmt2=null;
             getWord();
             if (!getWord().getContent().equals("("))
                 error();
-            Cond();
+            Or or=Cond();
             if (!getWord().getContent().equals(")"))
                 error();
-            Stmt();
+            Stmt stmt1=Stmt();
             if (showWord().getContent().equals("else")) {
                 getWord();
-                Stmt();
+                stmt2=Stmt();
             }
+                return new If(or,stmt1,stmt2);
+
         } else if (showWord().getContent().equals("{")) {
             return Block();
         } else if (showWord().getContent().equals("while")) {
             getWord();
             if (!getWord().getContent().equals("("))
                 error();
-            Cond();
+            Or or=Cond();
             if (!getWord().getContent().equals(")"))
                 error();
-            Stmt();
+            Stmt stmt=Stmt();
+            return new While(or,stmt);
         } else if (showWord().getContent().equals("break") || showWord().getContent().equals("continue")) {
-            getWord();
+            int flag=0;
+            if(getWord().getContent().equals("break")){
+                flag=1;
+            }
             if (!getWord().getContent().equals(";")) {
                 error();
+            }
+            if(flag==1){
+                return new Break();
+            }else{
+                return new Continue();
             }
         } else if (showWord().getContent().equals("return")) {
             Expr expr=null;
@@ -510,8 +522,8 @@ public class Parsingtemp {
 //        System.out.print("<Exp>\n");
     }
 
-    private void Cond() {
-        LOrExp();
+    private Or Cond() {
+        return LOrExp();
 //        System.out.print("<Cond>\n");
     }
 
@@ -635,49 +647,57 @@ public class Parsingtemp {
 //        System.out.print("<AddExp>\n");
     }
 
-    private void RelExp() {
-        AddExp();
+    private Expr RelExp() {
+        Expr expr1=AddExp();
         while (true) {
             String s = showWord().getContent();
             if (s.equals("<") || s.equals(">") || s.equals("<=") || s.equals(">=")) {
 //                System.out.print("<RelExp>\n");
-                getWord();
-                AddExp();
+                Word w=getWord();
+                Expr expr2=AddExp();
+                expr1=new Logical(w,expr1,expr2);
             } else {
                 break;
             }
         }
+        return expr1;
 //        System.out.print("<RelExp>\n");
     }
 
-    private void EqExp() {
-        RelExp();
+    private Expr EqExp() {
+        Expr expr1=RelExp();
         while (showWord().getContent().equals("==") || showWord().getContent().equals("!=")) {
 //            System.out.print("<EqExp>\n");
-            getWord();
-            RelExp();
+            Word w=getWord();
+            Expr expr2=RelExp();
+            expr1=new Logical(w,expr1,expr2);
         }
+        return expr1;
 //        System.out.print("<EqExp>\n");
     }
 
-    private void LAndExp() {
-        EqExp();
+    private And LAndExp() {
+        ArrayList<Expr> exprs=new ArrayList<>();
+        exprs.add(EqExp());
         while (showWord().getContent().equals("&&")) {
 //            System.out.print("<LAndExp>\n");
             getWord();
-            EqExp();
+            exprs.add(EqExp());
         }
 //        System.out.print("<LAndExp>\n");
+        return new And(exprs);
     }
 
-    private void LOrExp() {
-        LAndExp();
+    private Or LOrExp() {
+        ArrayList<And> ands=new ArrayList<>();
+        ands.add(LAndExp());
         while (showWord().getContent().equals("||")) {
 //            System.out.print("<LOrExp>\n");
             getWord();
-            LAndExp();
+            ands.add(LAndExp());
         }
 //        System.out.print("<LOrExp>\n");
+        return new Or(ands);
     }
 
     private Expr ConstExp() {

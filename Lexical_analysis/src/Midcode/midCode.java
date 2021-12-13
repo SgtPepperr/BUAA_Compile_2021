@@ -123,7 +123,7 @@ public class midCode {
                 else
                     return "print " + z;
             case LABEL:
-                return "\nLABEL " + z + " " + x + ":\n";
+                return "        <LABEL " + z + " " + x + ">";
             case CONST:
                 return "const int " + z + " = " + x;
             case ARRAY:
