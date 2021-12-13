@@ -177,6 +177,7 @@ public class Mips {
                 } else {
                     loadValue(name, regName, false);
                 }
+                break;
             }
             table = table.getOut();
         }
