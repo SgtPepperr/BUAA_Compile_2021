@@ -13,7 +13,9 @@ public class Array extends Lval {
     private int fact = 0;
     private Expr oneindex = null;
     private Expr twoindex = null;
-    private Expr temp;
+    public Expr temp;
+    private boolean ispointer=false;
+    public String num2;
 
     public Array(Word op, Expr oneindex, Expr twoindex) {
         super(op);
@@ -25,6 +27,7 @@ public class Array extends Lval {
         super(op);
         this.oneindex = oneindex;
     }
+
 
     public int calculate() {
         IntergerTable table=inttable;
@@ -57,9 +60,27 @@ public class Array extends Lval {
     @Override
     public Expr reduce() {
         if (twoindex == null) {
-            Temp temp = new Temp(op);
-            emit(new midCode(midCode.operation.GETARRAY, temp.toString(), op.getContent(), oneindex.reduce().toString()));
-            return temp;
+
+            IntergerTable table=inttable;
+            ArraySymbol sym=null;
+            while(table!=null){
+                if(table.contains(op.getContent())){
+                    sym = (ArraySymbol) table.get(op.getContent());
+                    break;
+                }
+                table=table.getOut();
+            }
+
+            if(sym.getLevel2()!=0){                                    //判断是否为指针
+                ispointer=true;
+                temp=oneindex.reduce();
+                num2=String.valueOf(sym.getLevel2());
+                return this;
+            }else {
+                Temp temp = new Temp(op);
+                emit(new midCode(midCode.operation.GETARRAY, temp.toString(), op.getContent(), oneindex.reduce().toString()));
+                return temp;
+            }
         } else {
             Temp temp1 = new Temp(op);
             Temp temp2 = new Temp(op);

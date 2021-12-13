@@ -4,6 +4,7 @@ import Midcode.midCode;
 import Symbol_table.FuncTable;
 import Symbol_table.IntergerTable;
 import Symbol_table.Symbols.ArraySymbol;
+import Symbol_table.Symbols.NorSymbol;
 import Symbol_table.Symbols.VarSymbol;
 
 import java.io.FileNotFoundException;
@@ -78,6 +79,17 @@ public class Mips {
         return -1;
     }
 
+    boolean ispointer(String name) {
+        IntergerTable table = intable;
+        while (table != null) {
+            if (table.contains(name)) {
+                return table.get(name).isIspointer();
+            }
+            table = table.getOut();
+        }
+        return false;
+    }
+
     boolean inglobal(String name) {
         IntergerTable table = intable;
         while (table != null) {
@@ -99,12 +111,26 @@ public class Mips {
         }
     }
 
+    void loadnormal(String name, boolean ispointer) {
+        if (intable.contains(name)) {
+            return;
+        } else {
+            intable.add(name, new ArraySymbol(name, funcpointer, true));
+//            intable.addlength(4);
+            funcpointer += 1;
+        }
+    }
+
     void loadnormal(String name, int len) {
+        if(intable.getOut()==null){
+            intable.add(name, new ArraySymbol(name, funcpointer));
+            funcpointer+=len;
+        }else{
         funcpointer += len - 1;
         intable.add(name, new ArraySymbol(name, funcpointer));
 //        intable.addlength(4 * len);
         funcpointer += 1;
-    }
+    }}
 
     void loadValue(String name, String regName, boolean tableable) {             //第三个参数用来判断能否在当前作用域产生对应新符号
 //        loadnormal(name);
@@ -116,11 +142,43 @@ public class Mips {
             }
             boolean global = inglobal(name);
             int offset = findoffset(name);
+//            boolean ispoint=ispointer(name);
+//            if(ispoint){
+//             if(global) {
+//                 mipscodes.add(new Mipscode(Mipscode.operation.add, regName, "$gp", "", 4 * offset));
+//             }else{
+//                 mipscodes.add(new Mipscode(Mipscode.operation.add, regName, "$fp", "", -4 * offset));
+//             }
+//            }else {
             if (global) {
                 mipscodes.add(new Mipscode(Mipscode.operation.lw, regName, "$gp", "", 4 * offset));
             } else {
                 mipscodes.add(new Mipscode(Mipscode.operation.lw, regName, "$fp", "", -4 * offset));
             }
+//            }
+        }
+    }
+
+    void loadAddress(String name, String regName) {
+        IntergerTable table = intable;
+        while (table != null) {
+            if (table.contains(name)) {
+                NorSymbol sym = table.get(name);
+                if (sym instanceof ArraySymbol) {
+                    if (ispointer(name)) {
+                        loadValue(name, regName, false);
+                    } else {
+                        if (inglobal(name)) {
+                            mipscodes.add(new Mipscode(Mipscode.operation.addi, regName, "$gp", "", 4 * sym.getOffset()));
+                        } else {
+                            mipscodes.add(new Mipscode(Mipscode.operation.addi, regName, "$fp", "", -4 * sym.getOffset()));
+                        }
+                    }
+                } else {
+                    loadValue(name, regName, false);
+                }
+            }
+            table = table.getOut();
         }
     }
 
@@ -138,7 +196,7 @@ public class Mips {
     }
 
     boolean istemp(String s) {
-        if(s.length()<2)
+        if (s.length() < 2)
             return false;
         return s.charAt(1) == '&';
     }
@@ -197,7 +255,16 @@ public class Mips {
             } else if (mc.op.equals(midCode.operation.CALL)) {
                 for (int j = 0; j < pushOpstcak.size(); j++) {
                     midCode mcs = pushOpstcak.get(j);
-                    loadValue(mcs.z, "$t0", false);
+                    if (mcs.x != null) {
+                        loadAddress(mcs.z, "$t0");
+                        loadValue(mcs.x, "$t1", false);
+                        mipscodes.add(new Mipscode(Mipscode.operation.li, "$t2", "", "", Integer.parseInt(mcs.y) * 4));
+                        mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t2", "$t1", ""));
+                        mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t0", "$t0", "$t2"));
+                    } else {
+                        loadAddress(mcs.z, "$t0");
+                    }
                     mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$sp", "", -4 * j));
                 }
                 pushOpstcak.clear();
@@ -255,22 +322,48 @@ public class Mips {
                 mipscodes.add(new Mipscode(Mipscode.operation.label, mc.z));
                 funcpointer = 0;
             } else if (mc.op.equals(midCode.operation.PARAM)) {
-                loadnormal(mc.z);
+                if (mc.x.equals("0"))
+                    loadnormal(mc.z);
+                else {
+                    loadnormal(mc.z, true);                    //载入指针型变量
+                }
             } else if (mc.op.equals(midCode.operation.GETARRAY)) {
                 //midCodefile << mc.z << " = " << mc.x << "[" << mc.y << "]\n";
                 //loadnormal(mc.z);
                 loadValue(mc.y, "$t0", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", "$t0", "", 2));
-                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$fp"));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", -4 * findoffset(mc.x)));
+                if (ispointer(mc.x)) {
+                    loadValue(mc.x, "$t1", false);
+                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$t0"));
+                    mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", 0));
+                } else {
+                    if (inglobal(mc.x)) {
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$gp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", 4 * findoffset(mc.x)));
+                    } else {
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$fp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", -4 * findoffset(mc.x)));
+                    }
+                }
                 storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.PUTARRAY)) {
                 //midCodefile << mc.z << "[" << mc.x << "]" << " = " << mc.y << "\n";
                 loadValue(mc.y, "$t0", false);
                 loadValue(mc.x, "$t1", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t1", "$t1", "", 2));
-                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$fp"));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
+                if (ispointer(mc.z)) {                                   //为pointer时进行特殊处理
+                    loadValue(mc.z, "$t2", false);
+                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t2", "$t1"));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t2", "", 0));
+                } else {
+                    if (inglobal(mc.z)) {
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$gp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", 4 * findoffset(mc.z)));
+                    } else {
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$fp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
+                    }
+                }
             } else if (mc.op.equals(midCode.operation.CONST)) {
                 loadValue(mc.x, "$t0", false);
                 storeValue(mc.z, "$t0", true);

@@ -6,6 +6,7 @@ public class NorSymbol {
     private int level=0;
     private int line=0;
     private int offset=0;
+    private boolean ispointer=false;
 
     public NorSymbol() {
     }
@@ -23,6 +24,19 @@ public class NorSymbol {
     public NorSymbol(String name, int offset) {
         this.name = name;
         this.offset = offset;
+    }
+    public NorSymbol(String name, int offset, boolean ispointer) {
+        this.name = name;
+        this.offset = offset;
+        this.ispointer=ispointer;
+    }
+
+    public boolean isIspointer() {
+        return ispointer;
+    }
+
+    public void setIspointer(boolean ispointer) {
+        this.ispointer = ispointer;
     }
 
     public int getOffset() {

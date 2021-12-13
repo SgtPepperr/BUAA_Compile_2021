@@ -30,6 +30,10 @@ public class ArraySymbol extends NorSymbol {
         super(name, offset);
     }
 
+    public ArraySymbol(String name, int offset, boolean ispointer) {
+        super(name, offset, ispointer);
+    }
+
     public ArraySymbol(String name, boolean isConst, int level) {
         super(name, isConst, level);
     }

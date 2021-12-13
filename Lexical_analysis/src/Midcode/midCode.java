@@ -102,7 +102,10 @@ public class midCode {
 //                midCodefile << "BNZ " << mc.z << "(" << mc.x << "=1)" << "\n";
 //                break;
             case PUSH:
-                return "push " + z;
+                if (x == null)
+                    return "push " + z;
+                else
+                    return "push " + z + "[" + x + "]"+"["+y+"]";
             case CALL:
                 return "call " + z;
             case RET:
@@ -111,7 +114,7 @@ public class midCode {
                 else
                     return "RET null";
             case RETVALUE:
-                return "retvalue "+z;
+                return "retvalue " + z;
             case SCAN:
                 return "scan " + z;
             case PRINT:
@@ -120,7 +123,7 @@ public class midCode {
                 else
                     return "print " + z;
             case LABEL:
-                return  "\nLABEL " + z + " " + x + ":\n";
+                return "\nLABEL " + z + " " + x + ":\n";
             case CONST:
                 return "const int " + z + " = " + x;
             case ARRAY:
