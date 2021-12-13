@@ -26,6 +26,10 @@ public class Unary extends Expr{
            Temp t=new Temp(op);
            emit(new midCode(midCode.operation.MINUOP,t.toString(),"0",exp.reduce().toString()));
            return t;
+       }else if(op.getContent().equals("!")){
+           Temp t=new Temp(op);
+           emit(new midCode(midCode.operation.EQLOP,t.toString(),"0",exp.reduce().toString()));
+           return t;
        }else{
            return null;
        }

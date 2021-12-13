@@ -4,6 +4,7 @@ package AST;
 import Midcode.midCode;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Stack;
 
 import Symbol_table.FuncTable;
 import Symbol_table.IntergerTable;
@@ -14,6 +15,8 @@ public class Node {
     public static FuncTable funcTable=new FuncTable();
     public static LinkedList<String> stringss=new LinkedList<>();
     static int labels=0;
+    static int jumps=0;
+    static Stack<Integer> loopstack=new Stack<>();
 
 
     public int newlabel() {

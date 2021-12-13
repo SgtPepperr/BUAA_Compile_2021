@@ -16,6 +16,7 @@ public class midCode {
         NEQOP,  //!=
         ASSIGNOP,  //=
         GOTO,  //无条件跳转
+        Jump,  //跳转标记
         BZ,    //不满足条件跳转
         BNZ,   //满足条件跳转
         PUSH,  //函数调用时参数传递
@@ -72,35 +73,37 @@ public class midCode {
                 return z + " = " + x + " / " + y;
             case MODOP:
                 return z + " = " + x + " % " + y;
-//            case LSSOP:
-//                midCodefile << mc.z << " = (" << mc.x << " < " << mc.y << ")\n";
-//                break;
-//            case LEQOP:
-//                midCodefile << mc.z << " = (" << mc.x << " <= " << mc.y << ")\n";
-//                break;
-//            case GREOP:
-//                midCodefile << mc.z << " = (" << mc.x << " > " << mc.y << ")\n";
-//                break;
-//            case GEQOP:
-//                midCodefile << mc.z << " = (" << mc.x << " >= " << mc.y << ")\n";
-//                break;
-//            case EQLOP:
-//                midCodefile << mc.z << " = (" << mc.x << " == " << mc.y << ")\n";
-//                break;
-//            case NEQOP:
-//                midCodefile << mc.z << " = (" << mc.x << " != " << mc.y << ")\n";
-//                break;
+            case LSSOP:
+                return z+" = "+x+" < "+y;
+            case LEQOP:
+                return z+" = "+x+" <= "+y;
+            case GREOP:
+                return z+" = "+x+" > "+y;
+            case GEQOP:
+                return z+" = "+x+" >= "+y;
+            case EQLOP:
+                return z+" = "+x+" == "+y;
+            case NEQOP:
+                return z+" = "+x+" != "+y;
             case ASSIGNOP:
                 return z + " = " + x;
-//            case GOTO:
-//                midCodefile << "GOTO " << mc.z << "\n";
-//                break;
-//            case BZ:
-//                midCodefile << "BZ " << mc.z << "(" << mc.x << "=0)" << "\n";
-//                break;
-//            case BNZ:
+            case GOTO:
+                if(x==null){
+                    return "GOTO jump"+z;
+                }else{
+                    return "GOTO loop"+z+"---"+x;
+                }
+            case BZ:
+               return "if "+x+" == 0 then goto jump"+z;
+            case BNZ:
 //                midCodefile << "BNZ " << mc.z << "(" << mc.x << "=1)" << "\n";
-//                break;
+                break;
+            case Jump:
+                if(x==null){
+                    return "        <JUMPDST JUMP"+z+">";
+                }else{
+                    return "        <JUMPDST LOOP"+z+"---"+x+">";
+                }
             case PUSH:
                 if (x == null)
                     return "push " + z;
@@ -123,7 +126,7 @@ public class midCode {
                 else
                     return "print " + z;
             case LABEL:
-                return "        <LABEL " + z + " " + x + ">";
+                return "    <LABEL " + z + " " + x + ">";
             case CONST:
                 return "const int " + z + " = " + x;
             case ARRAY:
@@ -159,5 +162,6 @@ public class midCode {
             default:
                 return null;
         }
+        return null;
     }
 }
