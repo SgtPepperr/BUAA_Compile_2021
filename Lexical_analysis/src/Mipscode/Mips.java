@@ -365,7 +365,7 @@ public class Mips {
                         mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$gp"));
                         mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", 4 * findoffset(mc.z)));
                     } else {
-                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$fp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.addu, "$t1", "$t1", "$fp"));
                         mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
                     }
                 }
@@ -469,6 +469,9 @@ public class Mips {
             switch (mc.op) {
                 case add:
                     System.out.println("add " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case addu:
+                    System.out.println("addu " + mc.z + "," + mc.x + "," + mc.y);
                     break;
                 case sle:
                     System.out.println("sle " + mc.z + "," + mc.x + "," + mc.y);

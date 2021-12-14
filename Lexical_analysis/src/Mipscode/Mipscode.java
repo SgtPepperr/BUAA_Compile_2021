@@ -4,6 +4,7 @@ package Mipscode;
 public class Mipscode {
     public enum operation {
         add,
+        addu,
         addi,
         sub,
         mult,
