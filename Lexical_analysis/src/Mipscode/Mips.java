@@ -161,6 +161,10 @@ public class Mips {
 
     void loadAddress(String name, String regName) {
         IntergerTable table = intable;
+        if (Character.isDigit(name.charAt(0))) {
+            mipscodes.add(new Mipscode(Mipscode.operation.li, regName, "", "", Integer.parseInt(name)));
+            return;
+        }
         while (table != null) {
             if (table.contains(name)) {
                 NorSymbol sym = table.get(name);
@@ -422,12 +426,12 @@ public class Mips {
             }else if(mc.op.equals(midCode.operation.EQLOP)) { //==
                 loadValue(mc.x, "$t0",false);
                 loadValue(mc.y,"$t1",false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sne,"$t2","$t0","$t1"));
+                mipscodes.add(new Mipscode(Mipscode.operation.seq,"$t2","$t0","$t1"));
                 storeValue(mc.z,"$t2",true);
             }else if(mc.op.equals(midCode.operation.NEQOP)) {
                 loadValue(mc.x, "$t0",false);
                 loadValue(mc.y,"$t1",false);
-                mipscodes.add(new Mipscode(Mipscode.operation.seq,"$t2","$t0","$t1"));
+                mipscodes.add(new Mipscode(Mipscode.operation.sne,"$t2","$t0","$t1"));
                 storeValue(mc.z,"$t2",true);                    //!=
             }else if(mc.op.equals(midCode.operation.BZ)){
                 loadValue(mc.x,"$t0",false);
