@@ -35,6 +35,8 @@ public class midCode {
         PUTARRAY,  //给数组赋值  a[] = t
         EXIT,  //退出 main最后
         DEBUG,
+        SLL,   //左移
+        SRL,   //右移
     }
 
     public operation op;       //操作符
@@ -159,6 +161,10 @@ public class midCode {
                 return z + "[" + x + "] = " + y;
             case EXIT:
                 return "\n-----------------EXIT--------------\n";
+            case SLL:
+                return z+" = "+x+" << "+y;
+            case SRL:
+                return z+" = "+x+" >> "+y;
             default:
                 return null;
         }

@@ -53,7 +53,9 @@ public class Compiler {
         Parsingtemp parsingtemp=new Parsingtemp(sym.getWords());
         parsingtemp.analyse();
 
-        Mips mips=new Mips(parsingtemp.getMidCodes(), parsingtemp.getStrings());
+        Optimize opt=new Optimize(parsingtemp.getMidCodes());
+
+        Mips mips=new Mips(opt.getNewmidCodes(), parsingtemp.getStrings());
 //        try {
 //            Scanner in = new Scanner(new FileReader(inputpath));
 //            while (in.hasNextLine()) {

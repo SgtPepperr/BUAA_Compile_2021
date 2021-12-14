@@ -446,8 +446,17 @@ public class Mips {
                 }else{
                     mipscodes.add(new Mipscode(Mipscode.operation.label,"Loop"+mc.z+mc.x));
                 }
-            }
-            else {
+            }else if(mc.op.equals(midCode.operation.DEBUG)) {
+                continue;
+            }else if(mc.op.equals(midCode.operation.SLL)){
+              loadValue(mc.x,"$t0",false);
+              mipscodes.add(new Mipscode(Mipscode.operation.sll,"$t0","$t0","",Integer.parseInt(mc.y)));
+              storeValue(mc.z,"$t0",true);
+            }else if(mc.op.equals(midCode.operation.SRL)){
+                loadValue(mc.x,"$t0",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.srl,"$t0","$t0","",Integer.parseInt(mc.y)));
+                storeValue(mc.z,"$t0",true);
+            } else {
                 System.out.print("what happened!!!!!!!!");
             }
         }
@@ -553,6 +562,9 @@ public class Mips {
                     break;
                 case sll:
                     System.out.println("sll " + mc.z + "," + mc.x + "," + mc.imme);
+                    break;
+                case srl:
+                    System.out.println("srl " + mc.z + "," + mc.x + "," + mc.imme);
                     break;
                 default:
                     System.out.println("-------------------wrong-------------------");

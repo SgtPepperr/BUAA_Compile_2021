@@ -12,6 +12,7 @@ public class Mipscode {
         mflo,
         mfhi,
         sll,
+        srl,
         sle,   //less or equal
         sne,
         sgt,
