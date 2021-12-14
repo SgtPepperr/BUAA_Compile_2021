@@ -28,7 +28,7 @@ public class If extends Stmt{
            jump2=++jumps;
            cond.gen(jump1);
            stmt1.gen();
-           emit(new midCode(midCode.operation.GOTO,String.valueOf(jump2)));
+           emit(new midCode(midCode.operation.GOTO,"Jump"+ jump2));
            emit(new midCode(midCode.operation.Jump,String.valueOf(jump1)));
            stmt2.gen();
            emit(new midCode(midCode.operation.Jump,String.valueOf(jump2)));

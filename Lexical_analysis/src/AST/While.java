@@ -19,7 +19,7 @@ public class While extends Stmt{
        emit(new midCode(midCode.operation.Jump,String.valueOf(jump),"begin"));
        Cond.gen(jump,true);
        stmt.gen();
-       emit(new midCode(midCode.operation.GOTO,String.valueOf(jump),"begin"));
+       emit(new midCode(midCode.operation.GOTO,"Loop"+String.valueOf(jump)+"begin"));
        emit(new midCode(midCode.operation.Jump,String.valueOf(jump),"end"));
        loopstack.pop();
     }

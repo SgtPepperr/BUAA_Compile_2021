@@ -11,6 +11,12 @@ public class Mipscode {
         mflo,
         mfhi,
         sll,
+        sle,   //less or equal
+        sne,
+        sgt,
+        sge,
+        slt,
+        seq,   //equal
         beq,
         bne,
         bgt, //扩展指令 相当于一条ALU类指令+一条branch指令

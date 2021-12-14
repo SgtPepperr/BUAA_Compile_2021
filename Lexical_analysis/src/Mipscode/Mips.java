@@ -399,7 +399,51 @@ public class Mips {
                 int len = funclength.get("main");
                 mipscodes.add(new Mipscode(Mipscode.operation.moveop, "$fp", "$sp"));
                 mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", -4 * len - 8));
-            } else {
+            }else if(mc.op.equals(midCode.operation.LSSOP)){ //<
+                loadValue(mc.x, "$t0",false);
+                loadValue(mc.y,"$t1",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.slt,"$t2","$t0","$t1"));
+                storeValue(mc.z,"$t2",true);
+            }else if(mc.op.equals(midCode.operation.LEQOP)){ //<=
+                loadValue(mc.x, "$t0",false);
+                loadValue(mc.y,"$t1",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sle,"$t2","$t0","$t1"));
+                storeValue(mc.z,"$t2",true);
+            }else if(mc.op.equals(midCode.operation.GREOP)){ //>
+                loadValue(mc.x, "$t0",false);
+                loadValue(mc.y,"$t1",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sgt,"$t2","$t0","$t1"));
+                storeValue(mc.z,"$t2",true);
+            }else if(mc.op.equals(midCode.operation.GEQOP)) { //>=
+                loadValue(mc.x, "$t0",false);
+                loadValue(mc.y,"$t1",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sge,"$t2","$t0","$t1"));
+                storeValue(mc.z,"$t2",true);
+            }else if(mc.op.equals(midCode.operation.EQLOP)) { //==
+                loadValue(mc.x, "$t0",false);
+                loadValue(mc.y,"$t1",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sne,"$t2","$t0","$t1"));
+                storeValue(mc.z,"$t2",true);
+            }else if(mc.op.equals(midCode.operation.NEQOP)) {
+                loadValue(mc.x, "$t0",false);
+                loadValue(mc.y,"$t1",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.seq,"$t2","$t0","$t1"));
+                storeValue(mc.z,"$t2",true);                    //!=
+            }else if(mc.op.equals(midCode.operation.BZ)){
+                loadValue(mc.x,"$t0",false);
+                mipscodes.add(new Mipscode(Mipscode.operation.li,"$t1","","",0));
+                mipscodes.add(new Mipscode(Mipscode.operation.beq,mc.z,"$t0","$t1"));
+            }
+            else if(mc.op.equals(midCode.operation.GOTO))  {
+                mipscodes.add(new Mipscode(Mipscode.operation.j, mc.z,"",""));
+            }else if(mc.op.equals(midCode.operation.Jump)) {
+                if(mc.x==null){
+                    mipscodes.add(new Mipscode(Mipscode.operation.label,"Jump"+mc.z));
+                }else{
+                    mipscodes.add(new Mipscode(Mipscode.operation.label,"Loop"+mc.z+mc.x));
+                }
+            }
+            else {
                 System.out.print("what happened!!!!!!!!");
             }
         }
@@ -421,6 +465,27 @@ public class Mips {
             switch (mc.op) {
                 case add:
                     System.out.println("add " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case sle:
+                    System.out.println("sle " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case sgt:
+                    System.out.println("sgt " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case sge:
+                    System.out.println("sge " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case slt:
+                    System.out.println("slt " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case sne:
+                    System.out.println("sne " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case seq:
+                    System.out.println("seq " + mc.z + "," + mc.x + "," + mc.y);
+                    break;
+                case beq:
+                    System.out.println("beq "+mc.x+","+mc.y+","+mc.z);
                     break;
                 case sub:
                     System.out.println("sub " + mc.z + "," + mc.x + "," + mc.y);

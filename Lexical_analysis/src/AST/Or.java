@@ -18,7 +18,7 @@ public class Or extends Node{
         for(And and:ands){
             and.gen(jump);
         }
-        emit(new midCode(midCode.operation.GOTO,String.valueOf(k)));
+        emit(new midCode(midCode.operation.GOTO,"Jump"+k));
         emit(new midCode(midCode.operation.Jump,String.valueOf(jump)));
     }
     public void gen(int k,boolean whi){
@@ -26,7 +26,7 @@ public class Or extends Node{
         for(And and:ands){
             and.gen(jump);
         }
-        emit(new midCode(midCode.operation.GOTO,String.valueOf(k),"end"));
+        emit(new midCode(midCode.operation.GOTO,"Loop" +String.valueOf(k)+"end"));
         emit(new midCode(midCode.operation.Jump,String.valueOf(jump)));
     }
 }

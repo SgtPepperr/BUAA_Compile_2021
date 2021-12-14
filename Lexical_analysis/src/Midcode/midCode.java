@@ -88,13 +88,13 @@ public class midCode {
             case ASSIGNOP:
                 return z + " = " + x;
             case GOTO:
-                if(x==null){
-                    return "GOTO jump"+z;
-                }else{
-                    return "GOTO loop"+z+"---"+x;
-                }
+//                if(x==null){
+                    return "GOTO "+z;
+//                }else{
+//                    return "GOTO loop"+z+"---"+x;
+//                }
             case BZ:
-               return "if "+x+" == 0 then goto jump"+z;
+               return "if "+x+" == 0 then goto "+z;
             case BNZ:
 //                midCodefile << "BNZ " << mc.z << "(" << mc.x << "=1)" << "\n";
                 break;

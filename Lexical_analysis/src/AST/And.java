@@ -15,9 +15,9 @@ public class And extends Node{
     public void gen(int k) {
         jump=++jumps;
         for(Expr e:exprs){
-            emit(new midCode(midCode.operation.BZ,String.valueOf(jump),e.reduce().toString()));
+            emit(new midCode(midCode.operation.BZ,"Jump"+jump,e.reduce().toString()));
         }
-        emit(new midCode(midCode.operation.GOTO,String.valueOf(k)));
+        emit(new midCode(midCode.operation.GOTO,"Jump"+k));
         emit(new midCode(midCode.operation.Jump,String.valueOf(jump)));
     }
 }
