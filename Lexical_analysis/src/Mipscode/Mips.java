@@ -134,7 +134,7 @@ public class Mips {
 
     void loadValue(String name, String regName, boolean tableable) {             //第三个参数用来判断能否在当前作用域产生对应新符号
 //        loadnormal(name);
-        if (Character.isDigit(name.charAt(0))) {
+        if (Character.isDigit(name.charAt(0))||name.charAt(0)=='-') {
             mipscodes.add(new Mipscode(Mipscode.operation.li, regName, "", "", Integer.parseInt(name)));
         } else {
             if (tableable) {
@@ -161,7 +161,7 @@ public class Mips {
 
     void loadAddress(String name, String regName) {
         IntergerTable table = intable;
-        if (Character.isDigit(name.charAt(0))) {
+        if (Character.isDigit(name.charAt(0))||name.charAt(0)=='-') {
             mipscodes.add(new Mipscode(Mipscode.operation.li, regName, "", "", Integer.parseInt(name)));
             return;
         }

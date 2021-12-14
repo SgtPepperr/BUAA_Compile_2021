@@ -2,7 +2,7 @@ package AST;
 
 import Midcode.midCode;
 
-public class While extends Stmt{
+public class While extends Stmt {
     Or Cond;
     Stmt stmt;
     int jump;
@@ -14,13 +14,14 @@ public class While extends Stmt{
 
     @Override
     public void gen() {
-       jump=++jumps;
-       loopstack.push(jump);
-       emit(new midCode(midCode.operation.Jump,String.valueOf(jump),"begin"));
-       Cond.gen(jump,true);
-       stmt.gen();
-       emit(new midCode(midCode.operation.GOTO,"Loop"+String.valueOf(jump)+"begin"));
-       emit(new midCode(midCode.operation.Jump,String.valueOf(jump),"end"));
-       loopstack.pop();
+        jump = ++jumps;
+        loopstack.push(jump);
+        emit(new midCode(midCode.operation.Jump, String.valueOf(jump), "begin"));
+        Cond.gen(jump, true);
+        if (stmt != null)
+            stmt.gen();
+        emit(new midCode(midCode.operation.GOTO, "Loop" + String.valueOf(jump) + "begin"));
+        emit(new midCode(midCode.operation.Jump, String.valueOf(jump), "end"));
+        loopstack.pop();
     }
 }
