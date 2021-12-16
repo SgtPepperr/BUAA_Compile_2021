@@ -74,13 +74,7 @@ public class Optimize {
                     }else if(index>0){
                         newmidCodes.add(new midCode(midCode.operation.SRL,m.z,m.x,String.valueOf(index)));
                         continue;
-                    }else{
-                         if(a==3){
-
-                         }else if(a==5){
-
-                         }
-                     }
+                    }
                 }
             }
             newmidCodes.add(m);
