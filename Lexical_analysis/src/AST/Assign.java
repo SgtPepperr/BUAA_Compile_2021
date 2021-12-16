@@ -13,6 +13,9 @@ public class Assign extends Stmt {
 
     @Override
     public void gen() {
+        lval.canculculate();
+        expr.canculculate();
+
         if (lval instanceof Id) {
             emit(new midCode(midCode.operation.ASSIGNOP, lval.reduce().toString(), expr.reduce().toString()));
         } else {

@@ -16,6 +16,7 @@ public class Block extends Stmt {
 
     @Override
     public void gen() {
+
         inttable=new IntergerTable(inttable);
         num=++count;
         emit(new midCode(midCode.operation.LABEL,String.valueOf(num),"start"));

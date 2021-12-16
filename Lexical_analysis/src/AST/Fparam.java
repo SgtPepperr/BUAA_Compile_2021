@@ -16,6 +16,9 @@ public class Fparam extends Node {
 
     @Override
     public void gen() {
+        id.canculculate();
+        expr.canculculate();
+
         String s=id.getcontent();
         if(level==0){
             emit(new midCode(midCode.operation.PARAM,s,String.valueOf("0")));

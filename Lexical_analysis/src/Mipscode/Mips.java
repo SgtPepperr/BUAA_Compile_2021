@@ -346,7 +346,7 @@ public class Mips {
                         mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$gp"));
                         mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", 4 * findoffset(mc.x)));
                     } else {
-                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$fp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.addu, "$t1", "$t0", "$fp"));
                         mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", -4 * findoffset(mc.x)));
                     }
                 }

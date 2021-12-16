@@ -16,6 +16,9 @@ public class FuncR extends Expr {
 
     @Override
     public Expr reduce() {
+        for(Expr ex:Rparas)
+            ex.canculculate();
+
         for (Expr e : Rparas) {
             Rafter.add(e.reduce());
         }

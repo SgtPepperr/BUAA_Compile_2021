@@ -8,13 +8,39 @@ import java.util.ArrayList;
 public class Arith extends Expr {
     public Expr exp1,exp2;
 
-    public Arith( Word op, Expr exp1, Expr exp2) {
+    @Override
+    public boolean canculculate() {
+       if(exp1.canculculate()&& exp2.canculculate()){
+           this.isvalue=true;
+           String midop= op.getContent();
+           if(midop.equals("+")){
+               value=exp1.value+ exp2.value;
+           } else if(midop.equals("-")){
+               value=exp1.value- exp2.value;
+           }else if(midop.equals("*")){
+               value=exp1.value* exp2.value;
+           }else if(midop.equals("/")){
+               value=exp1.value/ exp2.value;
+           }else if(midop.equals("%")){
+               value=exp1.value% exp2.value;
+           }
+           return true;
+       }
+       return false;
+    }
+
+    public Arith(Word op, Expr exp1, Expr exp2) {
         super( op);
         this.exp1 = exp1;
         this.exp2 = exp2;
     }
 
     public Expr reduce() {
+
+        if(isvalue){
+            return new Constant(new Word(String.valueOf(value)));
+        }
+
         Temp t=new Temp(op);
         String midop=op.getContent();
         midCode.operation ope= midCode.operation.DEBUG;

@@ -17,6 +17,13 @@ public class VarDef extends Def {
 
     @Override
     public void gen() {
+
+        for(ArrayList<Expr> ee:InitVal){
+            for(Expr e:ee){
+                e.canculculate();
+            }
+        }
+
         String name = lval.op.getContent();
 
         if (lval instanceof Id) {

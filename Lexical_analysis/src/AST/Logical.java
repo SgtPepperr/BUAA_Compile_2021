@@ -12,7 +12,35 @@ public class Logical extends Expr{
         this.expr2=expr2;
     }
 
+    @Override
+    public boolean canculculate() {
+        if(expr1.canculculate()&& expr2.canculculate()){
+            this.isvalue=true;
+            String midop= op.getContent();
+            if(midop.equals("<")){
+                value=expr1.value< expr2.value?1:0;
+            } else if(midop.equals("<=")){
+                value=expr1.value<= expr2.value?1:0;
+            }else if(midop.equals(">")){
+                value=expr1.value> expr2.value?1:0;
+            }else if(midop.equals(">=")){
+                value=expr1.value>= expr2.value?1:0;
+            }else if(midop.equals("==")){
+                value=expr1.value== expr2.value?1:0;
+            }else if(midop.equals("!="))
+                value=expr1.value!= expr2.value?1:0;{
+            }
+            return true;
+        }
+        return false;
+    }
+
     public Expr reduce() {
+
+        if(isvalue){
+            return new Constant(new Word(String.valueOf(value)));
+        }
+
         Temp t=new Temp(op);
         String midop=op.getContent();
         midCode.operation ope= midCode.operation.DEBUG;

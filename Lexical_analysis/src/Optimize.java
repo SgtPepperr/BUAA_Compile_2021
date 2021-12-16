@@ -12,7 +12,7 @@ public class Optimize {
     public Optimize(ArrayList<midCode> midCodes) {
         this.midCodes = midCodes;
         gen();
-    //    output();
+        output();
     }
 
     void output() {

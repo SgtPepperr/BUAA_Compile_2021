@@ -8,6 +8,8 @@ import java.util.ArrayList;
 public class Expr extends Stmt {
 
     public Word op;
+    public int value=0;
+    public boolean isvalue=false;
 
     public Expr( Word op) {
         this.op = op;
@@ -20,6 +22,10 @@ public class Expr extends Stmt {
     @Override
     public void gen() {
        //reduce();
+    }
+
+    public boolean canculculate(){
+        return false;
     }
 
     @Override

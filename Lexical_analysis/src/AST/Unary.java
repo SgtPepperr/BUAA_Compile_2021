@@ -11,6 +11,22 @@ public class Unary extends Expr{
     }
 
     @Override
+    public boolean canculculate() {
+       if(exp.canculculate()){
+           isvalue=true;
+           if(op.getContent().equals("-")){
+               value=0-exp.value;
+           }else if(op.getContent().equals("+")){
+               value=exp.value;
+           }else if(op.getContent().equals("!")){
+               value=exp.value==0?1:0;
+           }
+           return true;
+       }
+       return false;
+    }
+
+    @Override
     public int calculate() {
        if(op.getContent().equals("-"))
            return exp.calculate()*(-1);
@@ -20,6 +36,11 @@ public class Unary extends Expr{
 
     @Override
     public Expr reduce() {
+
+        if(isvalue){
+            return new Constant(new Word(String.valueOf(value)));
+        }
+
        if(op.getContent().equals("+")){
            return exp.reduce();
        }else if(op.getContent().equals("-")){

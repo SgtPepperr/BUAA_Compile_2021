@@ -11,6 +11,7 @@ public class Ret extends Stmt {
 
     @Override
     public void gen() {
+        expr.canculculate();
         if(expr==null){
             emit(new midCode(midCode.operation.RET,null));
         }else{

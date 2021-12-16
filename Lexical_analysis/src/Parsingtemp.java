@@ -40,7 +40,7 @@ public class Parsingtemp {
         midCodes=root.getMidCodes();
         midCodes.add(new midCode(midCode.operation.EXIT,null));
         strings=root.getStringss();
-  //      outputMidcode();
+        outputMidcode();
     }
 
     public void outputMidcode() {

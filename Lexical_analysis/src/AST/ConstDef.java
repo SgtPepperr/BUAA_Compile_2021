@@ -17,6 +17,10 @@ public class ConstDef extends Def{
 
     @Override
     public void gen() {
+        lval.canculculate();
+        for(Expr e:IniVal)
+            e.canculculate();
+
         for(int i=0;i<IniVal.size();i++){
             IniValue.add(IniVal.get(i).calculate());    //计算每一个初始值，并存入另一个数组中
         }

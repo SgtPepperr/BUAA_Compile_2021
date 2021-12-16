@@ -17,6 +17,10 @@ public class Print extends Stmt {
 
     @Override
     public void gen() {
+
+        for(Expr e:exprs)
+            e.canculculate();
+
         int i=0;
         Initial(format.getContent());
         for(String s:strings){
