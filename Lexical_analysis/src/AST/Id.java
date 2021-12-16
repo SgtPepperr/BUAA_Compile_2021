@@ -44,6 +44,8 @@ public class Id extends Lval{
         VarSymbol sym=null;
         while(table!=null){
             if(table.contains(op.getContent())){
+                if(table.get(op.getContent()) instanceof ArraySymbol)
+                    return false;
                 sym = (VarSymbol) table.get(op.getContent());
                 break;
             }

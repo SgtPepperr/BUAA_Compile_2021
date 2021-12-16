@@ -16,8 +16,8 @@ public class Fparam extends Node {
 
     @Override
     public void gen() {
-        id.canculculate();
-        expr.canculculate();
+//        id.canculculate();
+//        expr.canculculate();
 
         String s=id.getcontent();
         if(level==0){

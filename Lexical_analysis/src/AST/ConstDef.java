@@ -17,7 +17,7 @@ public class ConstDef extends Def{
 
     @Override
     public void gen() {
-        lval.canculculate();
+//        lval.canculculate();
         for(Expr e:IniVal)
             e.canculculate();
 
