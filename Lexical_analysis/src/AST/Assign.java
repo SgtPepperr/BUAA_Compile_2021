@@ -13,7 +13,7 @@ public class Assign extends Stmt {
 
     @Override
     public void gen() {
-        lval.canculculate();
+//        lval.canculculate();
         expr.canculculate();
 
         if (lval instanceof Id) {

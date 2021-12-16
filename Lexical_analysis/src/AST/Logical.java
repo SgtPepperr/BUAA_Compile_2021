@@ -14,7 +14,9 @@ public class Logical extends Expr{
 
     @Override
     public boolean canculculate() {
-        if(expr1.canculculate()&& expr2.canculculate()){
+        boolean a1=expr1.canculculate();
+        boolean a2=expr2.canculculate();
+        if(a1&& a2){
             this.isvalue=true;
             String midop= op.getContent();
             if(midop.equals("<")){

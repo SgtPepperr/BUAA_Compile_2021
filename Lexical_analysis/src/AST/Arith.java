@@ -10,7 +10,9 @@ public class Arith extends Expr {
 
     @Override
     public boolean canculculate() {
-       if(exp1.canculculate()&& exp2.canculculate()){
+        boolean a1=exp1.canculculate();
+        boolean a2=exp2.canculculate();
+       if(a1&&a2){
            this.isvalue=true;
            String midop= op.getContent();
            if(midop.equals("+")){
