@@ -1,3 +1,5 @@
+package Optim;
+
 import AST.Array;
 import Midcode.midCode;
 
@@ -41,6 +43,9 @@ public class Optimize {
                         newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,"0"));
                         continue;
                     }else if(index==-1){
+                        if(m.z.equals(m.y)){
+                            continue;
+                        }
                         newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,m.y));
                         continue;
                     }else if(index>0){
@@ -56,6 +61,9 @@ public class Optimize {
                         newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,"0"));
                         continue;
                     }else if(index==-1){
+                        if(m.z.equals(m.y)){
+                            continue;
+                        }
                         newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,m.x));
                         continue;
                     }else if(index>0){

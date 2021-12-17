@@ -1,6 +1,7 @@
 package Mipscode;
 
 import Midcode.midCode;
+import Optim.Register;
 import Symbol_table.FuncTable;
 import Symbol_table.IntergerTable;
 import Symbol_table.Symbols.ArraySymbol;
@@ -24,6 +25,7 @@ public class Mips {
     private boolean intofunc = false;
     private boolean intomain = false;
     private int funcpointer = 0;
+    private Register register;
     ArrayList<midCode> pushOpstcak = new ArrayList<>();
     HashMap<String, Integer> funclength = new HashMap<>();
     HashMap<String, String> stringHashMap = new HashMap<>();
@@ -31,6 +33,7 @@ public class Mips {
     public Mips(ArrayList<midCode> midCodes, LinkedList<String> strings) {
         this.midCodes = midCodes;
         this.strings = strings;
+        register = new Register();
         getFunclength();
         genMips();
         outputMipscode();
@@ -77,6 +80,10 @@ public class Mips {
             table = table.getOut();
         }
         return -1;
+    }
+
+    boolean checkname(String name) {
+        return name.length() >= 2 && name.charAt(1) == '&';
     }
 
     boolean ispointer(String name) {
@@ -133,8 +140,14 @@ public class Mips {
         }
     }
 
-    void loadValue(String name, String regName, boolean tableable) {             //第三个参数用来判断能否在当前作用域产生对应新符号
+    String loadValue(String name, String regName, boolean tableable) {             //第三个参数用来判断能否在当前作用域产生对应新符号
 //        loadnormal(name);
+
+        if (checkname(name)) {
+            String addr = register.findtemp(name);
+            return addr;
+        }
+
         if (Character.isDigit(name.charAt(0)) || name.charAt(0) == '-') {
             mipscodes.add(new Mipscode(Mipscode.operation.li, regName, "", "", Integer.parseInt(name)));
         } else {
@@ -158,13 +171,14 @@ public class Mips {
             }
 //            }
         }
+        return regName;
     }
 
-    void loadAddress(String name, String regName) {
+    String loadAddress(String name, String regName) {
         IntergerTable table = intable;
         if (Character.isDigit(name.charAt(0)) || name.charAt(0) == '-') {
             mipscodes.add(new Mipscode(Mipscode.operation.li, regName, "", "", Integer.parseInt(name)));
-            return;
+            return regName;
         }
         while (table != null) {
             if (table.contains(name)) {
@@ -178,14 +192,17 @@ public class Mips {
                         } else {
                             mipscodes.add(new Mipscode(Mipscode.operation.addi, regName, "$fp", "", -4 * sym.getOffset()));
                         }
+                        return regName;
                     }
                 } else {
-                    loadValue(name, regName, false);
+                    String addr = loadValue(name, regName, false);
+                    return addr;
                 }
                 break;
             }
             table = table.getOut();
         }
+        return regName;
     }
 
     void storeValue(String name, String regName, boolean tableable) {
@@ -225,22 +242,27 @@ public class Mips {
 
         divdeal(mc);
 //        loadValue(mc.x, "$t0", false);
-        loadValue(mc.y, "$t1", false);
-        mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t1", "$t2", ""));
+        String addr = loadValue(mc.y, "$t1", false);
+        mipscodes.add(new Mipscode(Mipscode.operation.mult, addr, "$t2", ""));
         mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
         mipscodes.add(new Mipscode(Mipscode.operation.sub, "$t2", "$t0", "$t2"));
 //                loadnormal(mc.z);
-        storeValue(mc.z, "$t2", istemp(mc.z));
+        if (checkname(mc.z)) {
+            mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$t2"));
+        } else {
+            storeValue(mc.z, "$t2", istemp(mc.z));
+        }
     }
 
     void divdeal(midCode mc) {
-        loadValue(mc.x, "$t0", false);
+        String addr = loadValue(mc.x, "$t0", false);
+        mipscodes.add(new Mipscode(Mipscode.operation.moveop, "$t0", addr));
         if (Character.isDigit(mc.y.charAt(0))) {
 //            if(Character.isDigit(mc.y.charAt(0))||mc.y.charAt(0)=='-'){
             //可能需要增加负数计算
             int divnum = Integer.parseInt(mc.y);
             int k = two_num(divnum);
-            if(is_index(divnum)){
+            if (is_index(divnum)) {
                 mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
                 return;
             } else if (divnum % 625 == 0) {
@@ -341,8 +363,8 @@ public class Mips {
             }
         }
 
-        loadValue(mc.y, "$t1", false);
-        mipscodes.add(new Mipscode(Mipscode.operation.divop, "$t0", "$t1", ""));
+        String addr2 = loadValue(mc.y, "$t1", false);
+        mipscodes.add(new Mipscode(Mipscode.operation.divop, "$t0", addr2, ""));
         mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
 //                loadnormal(mc.z);
     }
@@ -360,27 +382,46 @@ public class Mips {
         for (int i = 0; i < midCodes.size(); i++) {
             midCode mc = midCodes.get(i);
             if (mc.op.equals(midCode.operation.PLUSOP)) {
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t0", "$t1"));
-//                loadnormal(mc.z);
-                storeValue(mc.z, "$t2", istemp(mc.z));
+
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.add, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", istemp(mc.z));
+                }
+
             } else if (mc.op.equals(midCode.operation.MINUOP)) {
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sub, "$t2", "$t0", "$t1"));
-//                loadnormal(mc.z);
-                storeValue(mc.z, "$t2", istemp(mc.z));
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sub, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sub, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", istemp(mc.z));
+                }
             } else if (mc.op.equals(midCode.operation.MULTOP)) {
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
-                mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
+
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.mult, addr1, addr2, ""));
+                    mipscodes.add(new Mipscode(Mipscode.operation.mflo, register.gettemp(mc.z)));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
+                    mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t2", istemp(mc.z));
+                    storeValue(mc.z, "$t2", istemp(mc.z));
+                }
+
             } else if (mc.op.equals(midCode.operation.DIVOP)) {
                 divdeal(mc);
-                storeValue(mc.z, "$t2", istemp(mc.z));
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$t2"));
+                } else {
+                    storeValue(mc.z, "$t2", istemp(mc.z));
+                }
 //                loadValue(mc.x, "$t0", false);
 //                loadValue(mc.y, "$t1", false);
 //                mipscodes.add(new Mipscode(Mipscode.operation.divop, "$t0", "$t1", ""));
@@ -396,9 +437,13 @@ public class Mips {
 ////                loadnormal(mc.z);
 //                storeValue(mc.z, "$t2", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.ASSIGNOP)) {
-                loadValue(mc.x, "$t0", false);
+                String addr = loadValue(mc.x, "$t0", false);
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$t0", istemp(mc.z));
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), addr));
+                } else {
+                    storeValue(mc.z, "$t0", istemp(mc.z));
+                }
             } else if (mc.op.equals(midCode.operation.PUSH)) {
                 pushOpstcak.add(mc);
             } else if (mc.op.equals(midCode.operation.CALL)) {
@@ -406,9 +451,9 @@ public class Mips {
                     midCode mcs = pushOpstcak.get(j);
                     if (mcs.x != null) {
                         loadAddress(mcs.z, "$t0");
-                        loadValue(mcs.x, "$t1", false);
+                        String addr = loadValue(mcs.x, "$t1", false);
                         mipscodes.add(new Mipscode(Mipscode.operation.li, "$t2", "", "", Integer.parseInt(mcs.y) * 4));
-                        mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t2", "$t1", ""));
+                        mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t2", addr, ""));
                         mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
                         mipscodes.add(new Mipscode(Mipscode.operation.add, "$t0", "$t0", "$t2"));
                     } else {
@@ -432,13 +477,21 @@ public class Mips {
                 } else {
                     if (mc.z != null) {
 //                    loadnormal(mc.z);
-                        loadValue(mc.z, "$v0", false);
+                        if (checkname(mc.z)) {
+                            mipscodes.add(new Mipscode(Mipscode.operation.moveop, "$v0", register.findtemp(mc.z)));
+                        } else {
+                            loadValue(mc.z, "$v0", false);
+                        }
                     }
                     mipscodes.add(new Mipscode(Mipscode.operation.jr, "$ra"));
                 }
             } else if (mc.op.equals(midCode.operation.RETVALUE)) {
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$v0"));
+                } else {
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$v0", istemp(mc.z));
+                    storeValue(mc.z, "$v0", istemp(mc.z));
+                }
             } else if (mc.op.equals(midCode.operation.PRINT)) {
                 if (mc.x.equals("string")) {
                     String addr = stringHashMap.get(mc.z);
@@ -447,21 +500,28 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.syscall, "", "", ""));
                 } else {
 //                    loadnormal(mc.z);
-                    loadValue(mc.z, "$a0", false);
+                    if (checkname(mc.z)) {
+                        mipscodes.add(new Mipscode(Mipscode.operation.moveop, "$a0", register.findtemp(mc.z)));
+                    } else {
+                        loadValue(mc.z, "$a0", false);
+                    }
                     mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 1));
                     mipscodes.add(new Mipscode(Mipscode.operation.syscall, null));
+
                 }
             } else if (mc.op.equals(midCode.operation.SCAN)) {
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 5));
                 mipscodes.add(new Mipscode(Mipscode.operation.syscall, null));
 //                loadnormal(mc.z);
-                storeValue(mc.z, "$v0", istemp(mc.z));
+                mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$v0"));
+//                storeValue(mc.z, "$v0", istemp(mc.z));
             } else if (mc.op.equals(midCode.operation.LABEL)) {
                 if (mc.x.equals("start")) {
                     intable = new IntergerTable(intable);
                 } else if (mc.x.equals("end")) {
                     funcpointer -= intable.getContentlength();
                     intable = intable.getOut();
+                    register.reset();
                 }
             } else if (mc.op.equals(midCode.operation.FUNC)) {
                 if (!intofunc) {
@@ -479,8 +539,8 @@ public class Mips {
             } else if (mc.op.equals(midCode.operation.GETARRAY)) {
                 //midCodefile << mc.z << " = " << mc.x << "[" << mc.y << "]\n";
                 //loadnormal(mc.z);
-                loadValue(mc.y, "$t0", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", "$t0", "", 2));
+                String addr1 = loadValue(mc.y, "$t0", false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", addr1, "", 2));
                 if (ispointer(mc.x)) {
                     loadValue(mc.x, "$t1", false);
                     mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$t0"));
@@ -494,35 +554,39 @@ public class Mips {
                         mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t2", "$t1", "", -4 * findoffset(mc.x)));
                     }
                 }
-                storeValue(mc.z, "$t2", istemp(mc.z));
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$t2"));
+                } else {
+                    storeValue(mc.z, "$t2", istemp(mc.z));
+                }
             } else if (mc.op.equals(midCode.operation.PUTARRAY)) {
                 //midCodefile << mc.z << "[" << mc.x << "]" << " = " << mc.y << "\n";
-                loadValue(mc.y, "$t0", false);
-                loadValue(mc.x, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t1", "$t1", "", 2));
+                String addr1 = loadValue(mc.y, "$t0", false);
+                String addr2 = loadValue(mc.x, "$t1", false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", addr2, "", 2));
                 if (ispointer(mc.z)) {                                   //为pointer时进行特殊处理
                     loadValue(mc.z, "$t2", false);
-                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t2", "$t1"));
-                    mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t2", "", 0));
+                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t2", "$t0"));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sw, addr1, "$t2", "", 0));
                 } else {
                     if (inglobal(mc.z)) {
-                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$gp"));
-                        mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", 4 * findoffset(mc.z)));
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$gp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.sw, addr1, "$t1", "", 4 * findoffset(mc.z)));
                     } else {
-                        mipscodes.add(new Mipscode(Mipscode.operation.addu, "$t1", "$t1", "$fp"));
-                        mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
+                        mipscodes.add(new Mipscode(Mipscode.operation.addu, "$t1", "$t0", "$fp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.sw, addr1, "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
                     }
                 }
             } else if (mc.op.equals(midCode.operation.CONST)) {
-                loadValue(mc.x, "$t0", false);
-                storeValue(mc.z, "$t0", true);
+                String addr = loadValue(mc.x, "$t0", false);
+                storeValue(mc.z, addr, true);
             } else if (mc.op.equals(midCode.operation.EXIT)) {
 //                mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 10));
 //                mipscodes.add(new Mipscode(Mipscode.operation.syscall, ""));
             } else if (mc.op.equals(midCode.operation.VAR)) {
                 if (mc.x != null) {
-                    loadValue(mc.x, "$t0", false);
-                    storeValue(mc.z, "$t0", true);
+                    String addr = loadValue(mc.x, "$t0", false);
+                    storeValue(mc.z, addr, true);
                 } else {
                     loadnormal(mc.z);
                 }
@@ -548,39 +612,63 @@ public class Mips {
                 mipscodes.add(new Mipscode(Mipscode.operation.moveop, "$fp", "$sp"));
                 mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", -4 * len - 8));
             } else if (mc.op.equals(midCode.operation.LSSOP)) { //<
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.slt, "$t2", "$t0", "$t1"));
-                storeValue(mc.z, "$t2", true);
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.slt, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.slt, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", true);
+                }
             } else if (mc.op.equals(midCode.operation.LEQOP)) { //<=
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sle, "$t2", "$t0", "$t1"));
-                storeValue(mc.z, "$t2", true);
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sle, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sle, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", true);
+                }
             } else if (mc.op.equals(midCode.operation.GREOP)) { //>
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sgt, "$t2", "$t0", "$t1"));
-                storeValue(mc.z, "$t2", true);
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sgt, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sgt, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", true);
+                }
             } else if (mc.op.equals(midCode.operation.GEQOP)) { //>=
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sge, "$t2", "$t0", "$t1"));
-                storeValue(mc.z, "$t2", true);
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sge, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sge, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", true);
+                }
             } else if (mc.op.equals(midCode.operation.EQLOP)) { //==
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.seq, "$t2", "$t0", "$t1"));
-                storeValue(mc.z, "$t2", true);
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.seq, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.seq, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", true);
+                }
             } else if (mc.op.equals(midCode.operation.NEQOP)) {
-                loadValue(mc.x, "$t0", false);
-                loadValue(mc.y, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sne, "$t2", "$t0", "$t1"));
-                storeValue(mc.z, "$t2", true);                    //!=
+                String addr1 = loadValue(mc.x, "$t0", false);
+                String addr2 = loadValue(mc.y, "$t1", false);
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sne, register.gettemp(mc.z), addr1, addr2));
+                } else {
+                    mipscodes.add(new Mipscode(Mipscode.operation.sne, "$t2", addr1, addr2));
+                    storeValue(mc.z, "$t2", true);
+                }                  //!=
             } else if (mc.op.equals(midCode.operation.BZ)) {
-                loadValue(mc.x, "$t0", false);
+                String addr = loadValue(mc.x, "$t0", false);
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0));
-                mipscodes.add(new Mipscode(Mipscode.operation.beq, mc.z, "$t0", "$t1"));
+                mipscodes.add(new Mipscode(Mipscode.operation.beq, mc.z, addr, "$t1"));
             } else if (mc.op.equals(midCode.operation.GOTO)) {
                 mipscodes.add(new Mipscode(Mipscode.operation.j, mc.z, "", ""));
             } else if (mc.op.equals(midCode.operation.Jump)) {
@@ -592,13 +680,21 @@ public class Mips {
             } else if (mc.op.equals(midCode.operation.DEBUG)) {
                 continue;
             } else if (mc.op.equals(midCode.operation.SLL)) {
-                loadValue(mc.x, "$t0", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", "$t0", "", Integer.parseInt(mc.y)));
-                storeValue(mc.z, "$t0", true);
+                String addr = loadValue(mc.x, "$t0", false);
+                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", addr, "", Integer.parseInt(mc.y)));
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$t0"));
+                } else {
+                    storeValue(mc.z, "$t0", true);
+                }
             } else if (mc.op.equals(midCode.operation.SRL)) {
-                loadValue(mc.x, "$t0", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t0", "$t0", "", Integer.parseInt(mc.y)));
-                storeValue(mc.z, "$t0", true);
+                String addr = loadValue(mc.x, "$t0", false);
+                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t0", addr, "", Integer.parseInt(mc.y)));
+                if (checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$t0"));
+                } else {
+                    storeValue(mc.z, "$t0", true);
+                }
             } else {
                 System.out.print("what happened!!!!!!!!");
             }
