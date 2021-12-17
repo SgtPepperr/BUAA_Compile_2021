@@ -8,6 +8,7 @@ public class Mipscode {
         addi,
         sub,
         mult,
+        multu,
         divop,
         mflo,
         mfhi,
