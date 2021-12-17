@@ -464,28 +464,28 @@ public class Mips {
                     }
                 }
                 pushOpstcak.clear();
-                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", -4 * funclength.get(mc.z) - 28));
+                ArrayList<String> lists= register.getReverlists();
+                int len=lists.size();
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", -4 * funclength.get(mc.z) - 8-4*len));
                 mipscodes.add(new Mipscode(Mipscode.operation.sw, "$ra", "$sp", "", 4));
                 mipscodes.add(new Mipscode(Mipscode.operation.sw, "$fp", "$sp", "", 8));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t3", "$sp", "", 12));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t4", "$sp", "", 16));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t5", "$sp", "", 20));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t6", "$sp", "", 24));
-                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t7", "$sp", "", 28));
+                for(int k=0;k<len;k++){
+                    mipscodes.add(new Mipscode(Mipscode.operation.sw, lists.get(k), "$sp", "", 12+4*k));
+                }
+
 //                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t8", "$sp", "", 32));
 //                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t9", "$sp", "", 36));
-                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$fp", "$sp", "", 4 * funclength.get(mc.z) + 28));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$fp", "$sp", "", 4 * funclength.get(mc.z) + 8+4*len));
                 mipscodes.add(new Mipscode(Mipscode.operation.jal, mc.z));
 //                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t9", "$sp", "", 36));
 //                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t8", "$sp", "", 32));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t7", "$sp", "", 28));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t6", "$sp", "", 24));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t5", "$sp", "", 20));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t4", "$sp", "", 16));
-                mipscodes.add(new Mipscode(Mipscode.operation.lw, "$t3", "$sp", "", 12));
+                for(int k=len-1;k>=0;k--){
+                    mipscodes.add(new Mipscode(Mipscode.operation.lw, lists.get(k), "$sp", "", 12+4*k));
+                }
+
                 mipscodes.add(new Mipscode(Mipscode.operation.lw, "$fp", "$sp", "", 8));
                 mipscodes.add(new Mipscode(Mipscode.operation.lw, "$ra", "$sp", "", 4));
-                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", 4 * funclength.get(mc.z) + 28));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", 4 * funclength.get(mc.z) + 8+4*len));
             } else if (mc.op.equals(midCode.operation.RET)) {
                 if (intomain) {
                     mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 10));
