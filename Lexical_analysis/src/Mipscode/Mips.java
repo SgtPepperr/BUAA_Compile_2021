@@ -194,7 +194,7 @@ public class Mips {
                         }
                         return regName;
                     }
-                } else {
+                }else{
                     String addr = loadValue(name, regName, false);
                     return addr;
                 }
@@ -202,7 +202,8 @@ public class Mips {
             }
             table = table.getOut();
         }
-        return regName;
+        String addr = loadValue(name, regName, false);
+        return addr;
     }
 
     void storeValue(String name, String regName, boolean tableable) {
@@ -442,7 +443,7 @@ public class Mips {
                 if (checkname(mc.z)) {
                     mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), addr));
                 } else {
-                    storeValue(mc.z, "$t0", istemp(mc.z));
+                    storeValue(mc.z, addr, istemp(mc.z));
                 }
             } else if (mc.op.equals(midCode.operation.PUSH)) {
                 pushOpstcak.add(mc);
@@ -456,10 +457,11 @@ public class Mips {
                         mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t2", addr, ""));
                         mipscodes.add(new Mipscode(Mipscode.operation.mflo, "$t2"));
                         mipscodes.add(new Mipscode(Mipscode.operation.add, "$t0", "$t0", "$t2"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$sp", "", -4 * j));
                     } else {
-                        loadAddress(mcs.z, "$t0");
+                        String addr=loadAddress(mcs.z, "$t0");
+                        mipscodes.add(new Mipscode(Mipscode.operation.sw, addr, "$sp", "", -4 * j));;
                     }
-                    mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t0", "$sp", "", -4 * j));
                 }
                 pushOpstcak.clear();
                 mipscodes.add(new Mipscode(Mipscode.operation.addi, "$sp", "$sp", "", -4 * funclength.get(mc.z) - 8));
@@ -513,8 +515,11 @@ public class Mips {
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$v0", "", "", 5));
                 mipscodes.add(new Mipscode(Mipscode.operation.syscall, null));
 //                loadnormal(mc.z);
-                mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$v0"));
-//                storeValue(mc.z, "$v0", istemp(mc.z));
+                if(checkname(mc.z)) {
+                    mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$v0"));
+                }else{
+                    storeValue(mc.z, "$v0", istemp(mc.z));
+                }
             } else if (mc.op.equals(midCode.operation.LABEL)) {
                 if (mc.x.equals("start")) {
                     intable = new IntergerTable(intable);
@@ -563,17 +568,17 @@ public class Mips {
                 //midCodefile << mc.z << "[" << mc.x << "]" << " = " << mc.y << "\n";
                 String addr1 = loadValue(mc.y, "$t0", false);
                 String addr2 = loadValue(mc.x, "$t1", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t0", addr2, "", 2));
+                mipscodes.add(new Mipscode(Mipscode.operation.sll, "$t1", addr2, "", 2));
                 if (ispointer(mc.z)) {                                   //为pointer时进行特殊处理
                     loadValue(mc.z, "$t2", false);
-                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t2", "$t0"));
+                    mipscodes.add(new Mipscode(Mipscode.operation.add, "$t2", "$t2", "$t1"));
                     mipscodes.add(new Mipscode(Mipscode.operation.sw, addr1, "$t2", "", 0));
                 } else {
                     if (inglobal(mc.z)) {
-                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t0", "$gp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.add, "$t1", "$t1", "$gp"));
                         mipscodes.add(new Mipscode(Mipscode.operation.sw, addr1, "$t1", "", 4 * findoffset(mc.z)));
                     } else {
-                        mipscodes.add(new Mipscode(Mipscode.operation.addu, "$t1", "$t0", "$fp"));
+                        mipscodes.add(new Mipscode(Mipscode.operation.addu, "$t1", "$t1", "$fp"));
                         mipscodes.add(new Mipscode(Mipscode.operation.sw, addr1, "$t1", "", -4 * findoffset(mc.z)));            //数组还有点小问题，记得考虑一下
                     }
                 }
