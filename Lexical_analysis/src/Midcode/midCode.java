@@ -101,11 +101,7 @@ public class midCode {
 //                midCodefile << "BNZ " << mc.z << "(" << mc.x << "=1)" << "\n";
                 break;
             case Jump:
-                if(x==null){
-                    return "        <JUMPDST JUMP"+z+">";
-                }else{
-                    return "        <JUMPDST LOOP"+z+"---"+x+">";
-                }
+                    return "        <JUMPDST "+z+">";
             case PUSH:
                 if (x == null)
                     return "push " + z;

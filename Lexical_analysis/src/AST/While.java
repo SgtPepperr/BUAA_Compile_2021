@@ -16,12 +16,12 @@ public class While extends Stmt {
     public void gen() {
         jump = ++jumps;
         loopstack.push(jump);
-        emit(new midCode(midCode.operation.Jump, String.valueOf(jump), "begin"));
+        emit(new midCode(midCode.operation.Jump, "Loop" + jump + "begin"));
         Cond.gen(jump, true);
         if (stmt != null)
             stmt.gen();
         emit(new midCode(midCode.operation.GOTO, "Loop" + String.valueOf(jump) + "begin"));
-        emit(new midCode(midCode.operation.Jump, String.valueOf(jump), "end"));
+        emit(new midCode(midCode.operation.Jump, "Loop" + String.valueOf(jump) + "end"));
         loopstack.pop();
     }
 }

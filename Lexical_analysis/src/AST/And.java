@@ -21,7 +21,7 @@ public class And extends Node{
             emit(new midCode(midCode.operation.BZ,"Jump"+jump,e.reduce().toString()));
         }
         emit(new midCode(midCode.operation.GOTO,"Jump"+k));
-        emit(new midCode(midCode.operation.Jump,String.valueOf(jump)));
+        emit(new midCode(midCode.operation.Jump,"Jump"+jump));
     }
 
 }

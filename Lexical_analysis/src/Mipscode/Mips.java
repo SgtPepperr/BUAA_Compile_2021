@@ -472,7 +472,6 @@ public class Mips {
                 for(int k=0;k<len;k++){
                     mipscodes.add(new Mipscode(Mipscode.operation.sw, lists.get(k), "$sp", "", 12+4*k));
                 }
-
 //                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t8", "$sp", "", 32));
 //                mipscodes.add(new Mipscode(Mipscode.operation.sw, "$t9", "$sp", "", 36));
                 mipscodes.add(new Mipscode(Mipscode.operation.addi, "$fp", "$sp", "", 4 * funclength.get(mc.z) + 8+4*len));
@@ -691,11 +690,12 @@ public class Mips {
             } else if (mc.op.equals(midCode.operation.GOTO)) {
                 mipscodes.add(new Mipscode(Mipscode.operation.j, mc.z, "", ""));
             } else if (mc.op.equals(midCode.operation.Jump)) {
-                if (mc.x == null) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.label, "Jump" + mc.z));
-                } else {
-                    mipscodes.add(new Mipscode(Mipscode.operation.label, "Loop" + mc.z + mc.x));
-                }
+//                if (mc.x == null) {
+//                    mipscodes.add(new Mipscode(Mipscode.operation.label, "Jump" + mc.z));
+//                } else {
+//                    mipscodes.add(new Mipscode(Mipscode.operation.label, "Loop" + mc.z + mc.x));
+//                }
+                mipscodes.add(new Mipscode(Mipscode.operation.label, mc.z));
             } else if (mc.op.equals(midCode.operation.DEBUG)) {
                 continue;
             } else if (mc.op.equals(midCode.operation.SLL)) {

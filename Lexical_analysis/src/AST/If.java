@@ -23,7 +23,7 @@ public class If extends Stmt {
             cond.gen(jump1);
             if (stmt1 != null)
                 stmt1.gen();
-            emit(new midCode(midCode.operation.Jump, String.valueOf(jump1)));
+            emit(new midCode(midCode.operation.Jump,"Jump"+ jump1));
         } else {
             jump1 = ++jumps;
             jump2 = ++jumps;
@@ -31,9 +31,9 @@ public class If extends Stmt {
             if (stmt1 != null)
                 stmt1.gen();
             emit(new midCode(midCode.operation.GOTO, "Jump" + jump2));
-            emit(new midCode(midCode.operation.Jump, String.valueOf(jump1)));
+            emit(new midCode(midCode.operation.Jump, "Jump"+ jump1));
             stmt2.gen();
-            emit(new midCode(midCode.operation.Jump, String.valueOf(jump2)));
+            emit(new midCode(midCode.operation.Jump, "Jump"+ jump2));
         }
     }
 }

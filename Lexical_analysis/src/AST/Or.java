@@ -19,7 +19,7 @@ public class Or extends Node{
             and.gen(jump);
         }
         emit(new midCode(midCode.operation.GOTO,"Jump"+k));
-        emit(new midCode(midCode.operation.Jump,String.valueOf(jump)));
+        emit(new midCode(midCode.operation.Jump,"Jump"+jump));
     }
     public void gen(int k,boolean whi){
         jump=++jumps;
@@ -27,6 +27,6 @@ public class Or extends Node{
             and.gen(jump);
         }
         emit(new midCode(midCode.operation.GOTO,"Loop" +String.valueOf(k)+"end"));
-        emit(new midCode(midCode.operation.Jump,String.valueOf(jump)));
+        emit(new midCode(midCode.operation.Jump,"Jump"+jump));
     }
 }

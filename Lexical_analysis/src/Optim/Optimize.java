@@ -6,14 +6,17 @@ import Midcode.midCode;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Optimize {
     ArrayList<midCode> midCodes;
     ArrayList<midCode> newmidCodes = new ArrayList<>();
+    HashMap<String,String> maps=new HashMap<>();
 
     public Optimize(ArrayList<midCode> midCodes) {
         this.midCodes = midCodes;
         gen();
+        genbranch();
         output();
     }
 
@@ -29,6 +32,40 @@ public class Optimize {
         for (midCode m : newmidCodes) {
             System.out.println(m.toString());
         }
+    }
+
+    void genbranch(){
+
+        for(int i=0;i<newmidCodes.size();i++){
+            midCode m=newmidCodes.get(i);
+            if(m.op.equals(midCode.operation.Jump)){
+                midCode mn=newmidCodes.get(i+1);
+                if(mn.op.equals(midCode.operation.GOTO)){
+                    maps.put(m.z,mn.z);
+                }else{
+                    maps.put(m.z,m.z);
+                }
+            }
+        }
+        while (true){
+            int change=0;
+            for(String key: maps.keySet()){
+                String value=maps.get(key);
+                String value2= maps.get(value);
+                if(!value.equals(value2)){
+                    maps.put(key,value2);
+                    change++;
+                }
+            }
+            if(change==0)
+                break;
+        }
+        for(midCode m:newmidCodes){
+            if(m.op.equals(midCode.operation.BZ)||m.op.equals(midCode.operation.GOTO)){
+                m.z=maps.get(m.z);
+            }
+        }
+
     }
 
     void gen() {
@@ -83,6 +120,12 @@ public class Optimize {
                         newmidCodes.add(new midCode(midCode.operation.SRL,m.z,m.x,String.valueOf(index)));
                         continue;
                     }
+                }
+            } else if(m.op.equals(midCode.operation.BZ)||m.op.equals(midCode.operation.GOTO)){
+                String addr=m.z;
+                midCode mc=midCodes.get(i+1);
+                if(mc.op.equals(midCode.operation.Jump)&&addr.equals(mc.z)){
+                    continue;
                 }
             }
             newmidCodes.add(m);
