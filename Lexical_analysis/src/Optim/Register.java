@@ -7,7 +7,7 @@ public class Register {
     ArrayList<String> lists;
 
     public Register() {
-        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9");
+        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7");
         lists = new ArrayList<>(list);
     }
 
@@ -18,7 +18,7 @@ public class Register {
     }
 
     public String usetemp(String name) {
-        if (name.equals("$t3") || name.equals("$t4") || name.equals("$t5") || name.equals("$t6") || name.equals("$t7") || name.equals("$t8") || name.equals("$t9")) {
+        if (name.equals("$t3") || name.equals("$t4") || name.equals("$t5") || name.equals("$t6") || name.equals("$t7") ) {
             lists.add(name);
         }
         return name;
@@ -37,7 +37,7 @@ public class Register {
     }
 
     public void reset() {
-        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9");
+        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7");
         lists = new ArrayList<>(list);
     }
 }
