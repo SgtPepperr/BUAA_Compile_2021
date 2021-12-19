@@ -44,7 +44,7 @@ public class Mipscode {
         mflo,
         mfhi,
         sll,
-        srl,
+        sra,
         sle,   //less or equal
         sne,
         sgt,

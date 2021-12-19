@@ -120,7 +120,7 @@ public class midCode {
                 return "\n-----------------EXIT--------------\n";
             case SLL:
                 return z + " = " + x + " << " + y;
-            case SRL:
+            case SRA:
                 return z + " = " + x + " >> " + y;
             default:
                 return null;
@@ -163,6 +163,6 @@ public class midCode {
         EXIT,  //退出 main最后
         DEBUG,
         SLL,   //左移
-        SRL,   //右移
+        SRA,   //右移
     }
 }

@@ -116,7 +116,7 @@ public class Optimize {
                         newmidCodes.add(new midCode(midCode.operation.ASSIGNOP, m.z, m.x));
                         continue;
                     } else if (index > 0) {
-                        newmidCodes.add(new midCode(midCode.operation.SRL, m.z, m.x, String.valueOf(index)));
+                        newmidCodes.add(new midCode(midCode.operation.SRA, m.z, m.x, String.valueOf(index)));
                         continue;
                     }
                 }

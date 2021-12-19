@@ -271,11 +271,11 @@ public class Mips {
             int k = two_num(divnum);
             int left=leftcheck(divnum);
             if (is_index(divnum)) {
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 return;
             } else if (left==625) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x68DB8BAD));
                 if (k > 0)
@@ -283,11 +283,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 8));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 8));
                 return;
             } else if (left==125) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x10624DD3));
                 if (k > 0)
@@ -295,11 +295,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 3));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 3));
                 return;
             } else if (left==25) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x51EB851F));
                 if (k > 0)
@@ -307,11 +307,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 3));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 3));
                 return;
             } else if (left==11) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x2E8BA2E9));
                 if (k > 0)
@@ -319,11 +319,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 1));
                 return;
             } else if (left==9) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x38E38E39));
                 if (k > 0)
@@ -331,11 +331,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 1));
                 return;
             } else if (left == 7) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x92492493));
                 if (k > 0)
@@ -343,11 +343,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.multu, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 2));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 2));
                 return;
             } else if (5 == left) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x66666667));
                 if (k > 0)
@@ -355,11 +355,11 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 1));
                 return;
             } else if ( 3 == left) {
                 if (k > 0) {
-                    mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t2", "$t0", "", k));
+                    mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
                 mipscodes.add(new Mipscode(Mipscode.operation.li, "$t1", "", "", 0x55555556));
                 if (k > 0)
@@ -714,9 +714,9 @@ public class Mips {
                 } else {
                     storeValue(mc.z, "$t0", true);
                 }
-            } else if (mc.op.equals(midCode.operation.SRL)) {
+            } else if (mc.op.equals(midCode.operation.SRA)) {
                 String addr = loadValue(mc.x, "$t0", false);
-                mipscodes.add(new Mipscode(Mipscode.operation.srl, "$t0", addr, "", Integer.parseInt(mc.y)));
+                mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t0", addr, "", Integer.parseInt(mc.y)));
                 if (checkname(mc.z)) {
                     mipscodes.add(new Mipscode(Mipscode.operation.moveop, register.gettemp(mc.z), "$t0"));
                 } else {
@@ -832,8 +832,8 @@ public class Mips {
                 case sll:
                     System.out.println("sll " + mc.z + "," + mc.x + "," + mc.imme);
                     break;
-                case srl:
-                    System.out.println("srl " + mc.z + "," + mc.x + "," + mc.imme);
+                case sra:
+                    System.out.println("sra " + mc.z + "," + mc.x + "," + mc.imme);
                     break;
                 default:
                     System.out.println("-------------------wrong-------------------");
