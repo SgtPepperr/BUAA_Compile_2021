@@ -27,6 +27,7 @@ public class Mips {
     private boolean intofunc = false;
     private boolean intomain = false;
     private int funcpointer = 0;
+    private int divjump = 0;
     private Register register;
 
     public Mips(ArrayList<midCode> midCodes, LinkedList<String> strings) {
@@ -254,9 +255,9 @@ public class Mips {
         }
     }
 
-    int leftcheck(int m){
-        while(m%2==0){
-            m/=2;
+    int leftcheck(int m) {
+        while (m % 2 == 0) {
+            m /= 2;
         }
         return m;
     }
@@ -269,11 +270,15 @@ public class Mips {
             //可能需要增加负数计算
             int divnum = Integer.parseInt(mc.y);
             int k = two_num(divnum);
-            int left=leftcheck(divnum);
+            int left = leftcheck(divnum);
             if (is_index(divnum)) {
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t0", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t0", "$t0", "", divnum - 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 return;
-            } else if (left==625) {
+            } else if (left == 625) {
                 if (k > 0) {
                     mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
@@ -284,8 +289,12 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 8));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
-            } else if (left==125) {
+            } else if (left == 125) {
                 if (k > 0) {
                     mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
@@ -296,8 +305,12 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 3));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
-            } else if (left==25) {
+            } else if (left == 25) {
                 if (k > 0) {
                     mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
@@ -308,8 +321,12 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 3));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
-            } else if (left==11) {
+            } else if (left == 11) {
                 if (k > 0) {
                     mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
@@ -320,8 +337,12 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 1));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
-            } else if (left==9) {
+            } else if (left == 9) {
                 if (k > 0) {
                     mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
@@ -332,6 +353,10 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 1));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
             } else if (left == 7) {
                 if (k > 0) {
@@ -344,6 +369,10 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.multu, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 2));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
             } else if (5 == left) {
                 if (k > 0) {
@@ -356,8 +385,12 @@ public class Mips {
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
                 mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t2", "", 1));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
-            } else if ( 3 == left) {
+            } else if (3 == left) {
                 if (k > 0) {
                     mipscodes.add(new Mipscode(Mipscode.operation.sra, "$t2", "$t0", "", k));
                 }
@@ -367,6 +400,10 @@ public class Mips {
                 else
                     mipscodes.add(new Mipscode(Mipscode.operation.mult, "$t0", "$t1", ""));
                 mipscodes.add(new Mipscode(Mipscode.operation.mfhi, "$t2"));
+                divjump++;
+                mipscodes.add(new Mipscode(Mipscode.operation.bgez, "$t2", "divjump" + divjump));
+                mipscodes.add(new Mipscode(Mipscode.operation.addi, "$t2", "$t2", "", 1));
+                mipscodes.add(new Mipscode(Mipscode.operation.label, "divjump" + divjump));
                 return;
             }
         }
@@ -834,6 +871,9 @@ public class Mips {
                     break;
                 case sra:
                     System.out.println("sra " + mc.z + "," + mc.x + "," + mc.imme);
+                    break;
+                case bgez:
+                    System.out.println("bgez " + mc.z + "," + mc.x);
                     break;
                 default:
                     System.out.println("-------------------wrong-------------------");

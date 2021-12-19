@@ -43,6 +43,7 @@ public class Mipscode {
         divop,
         mflo,
         mfhi,
+        bgez,
         sll,
         sra,
         sle,   //less or equal
