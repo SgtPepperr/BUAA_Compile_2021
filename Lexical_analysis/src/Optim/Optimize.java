@@ -1,6 +1,5 @@
 package Optim;
 
-import AST.Array;
 import Midcode.midCode;
 
 import java.io.FileNotFoundException;
@@ -11,7 +10,7 @@ import java.util.HashMap;
 public class Optimize {
     ArrayList<midCode> midCodes;
     ArrayList<midCode> newmidCodes = new ArrayList<>();
-    HashMap<String,String> maps=new HashMap<>();
+    HashMap<String, String> maps = new HashMap<>();
 
     public Optimize(ArrayList<midCode> midCodes) {
         this.midCodes = midCodes;
@@ -34,35 +33,35 @@ public class Optimize {
         }
     }
 
-    void genbranch(){
+    void genbranch() {
 
-        for(int i=0;i<newmidCodes.size();i++){
-            midCode m=newmidCodes.get(i);
-            if(m.op.equals(midCode.operation.Jump)){
-                midCode mn=newmidCodes.get(i+1);
-                if(mn.op.equals(midCode.operation.GOTO)){
-                    maps.put(m.z,mn.z);
-                }else{
-                    maps.put(m.z,m.z);
+        for (int i = 0; i < newmidCodes.size(); i++) {
+            midCode m = newmidCodes.get(i);
+            if (m.op.equals(midCode.operation.Jump)) {
+                midCode mn = newmidCodes.get(i + 1);
+                if (mn.op.equals(midCode.operation.GOTO)) {
+                    maps.put(m.z, mn.z);
+                } else {
+                    maps.put(m.z, m.z);
                 }
             }
         }
-        while (true){
-            int change=0;
-            for(String key: maps.keySet()){
-                String value=maps.get(key);
-                String value2= maps.get(value);
-                if(!value.equals(value2)){
-                    maps.put(key,value2);
+        while (true) {
+            int change = 0;
+            for (String key : maps.keySet()) {
+                String value = maps.get(key);
+                String value2 = maps.get(value);
+                if (!value.equals(value2)) {
+                    maps.put(key, value2);
                     change++;
                 }
             }
-            if(change==0)
+            if (change == 0)
                 break;
         }
-        for(midCode m:newmidCodes){
-            if(m.op.equals(midCode.operation.BZ)||m.op.equals(midCode.operation.GOTO)){
-                m.z=maps.get(m.z);
+        for (midCode m : newmidCodes) {
+            if (m.op.equals(midCode.operation.BZ) || m.op.equals(midCode.operation.GOTO)) {
+                m.z = maps.get(m.z);
             }
         }
 
@@ -74,57 +73,57 @@ public class Optimize {
             if (m.op.equals(midCode.operation.MULTOP)) {
                 if (Character.isDigit(m.x.charAt(0))) {
                     int a = Integer.parseInt(m.x);
-                    int index=is_index(a);
+                    int index = is_index(a);
 
-                    if(index==0){
-                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,"0"));
+                    if (index == 0) {
+                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP, m.z, "0"));
                         continue;
-                    }else if(index==-1){
-                        if(m.z.equals(m.y)){
+                    } else if (index == -1) {
+                        if (m.z.equals(m.y)) {
                             continue;
                         }
-                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,m.y));
+                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP, m.z, m.y));
                         continue;
-                    }else if(index>0){
-                        newmidCodes.add(new midCode(midCode.operation.SLL,m.z,m.y,String.valueOf(index)));
+                    } else if (index > 0) {
+                        newmidCodes.add(new midCode(midCode.operation.SLL, m.z, m.y, String.valueOf(index)));
                         continue;
                     }
 
-                }else if(Character.isDigit(m.y.charAt(0))){
+                } else if (Character.isDigit(m.y.charAt(0))) {
                     int a = Integer.parseInt(m.y);
-                    int index=is_index(a);
+                    int index = is_index(a);
 
-                    if(index==0){
-                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,"0"));
+                    if (index == 0) {
+                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP, m.z, "0"));
                         continue;
-                    }else if(index==-1){
-                        if(m.z.equals(m.y)){
+                    } else if (index == -1) {
+                        if (m.z.equals(m.y)) {
                             continue;
                         }
-                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,m.x));
+                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP, m.z, m.x));
                         continue;
-                    }else if(index>0){
-                        newmidCodes.add(new midCode(midCode.operation.SLL,m.z,m.x,String.valueOf(index)));
+                    } else if (index > 0) {
+                        newmidCodes.add(new midCode(midCode.operation.SLL, m.z, m.x, String.valueOf(index)));
                         continue;
                     }
                 }
             } else if (m.op.equals(midCode.operation.DIVOP)) {
-                if(Character.isDigit(m.y.charAt(0))){
+                if (Character.isDigit(m.y.charAt(0))) {
                     int a = Integer.parseInt(m.y);
-                    int index=is_index(a);
+                    int index = is_index(a);
 
-                     if(index==-1){
-                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP,m.z,m.x));
+                    if (index == -1) {
+                        newmidCodes.add(new midCode(midCode.operation.ASSIGNOP, m.z, m.x));
                         continue;
-                    }else if(index>0){
-                        newmidCodes.add(new midCode(midCode.operation.SRL,m.z,m.x,String.valueOf(index)));
+                    } else if (index > 0) {
+                        newmidCodes.add(new midCode(midCode.operation.SRL, m.z, m.x, String.valueOf(index)));
                         continue;
                     }
                 }
-            } else if(m.op.equals(midCode.operation.BZ)||m.op.equals(midCode.operation.GOTO)){
-                String addr=m.z;
-                midCode mc=midCodes.get(i+1);
-                if(mc.op.equals(midCode.operation.Jump)&&addr.equals(mc.z)){
+            } else if (m.op.equals(midCode.operation.BZ) || m.op.equals(midCode.operation.GOTO)) {
+                String addr = m.z;
+                midCode mc = midCodes.get(i + 1);
+                if (mc.op.equals(midCode.operation.Jump) && addr.equals(mc.z)) {
                     continue;
                 }
             }
@@ -138,10 +137,10 @@ public class Optimize {
         } else if (k == 1) {
             return -1;
         } else if ((k & (k - 1)) == 0) {
-            int l=0;
-            k=k/2;
-            while(k>0){
-                k=k/2;
+            int l = 0;
+            k = k / 2;
+            while (k > 0) {
+                k = k / 2;
                 l++;
             }
             return l;

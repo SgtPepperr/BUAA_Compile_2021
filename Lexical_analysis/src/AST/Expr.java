@@ -1,17 +1,14 @@
 package AST;
 
-import Midcode.midCode;
 import Word.Word;
-
-import java.util.ArrayList;
 
 public class Expr extends Stmt {
 
     public Word op;
-    public int value=0;
-    public boolean isvalue=false;
+    public int value = 0;
+    public boolean isvalue = false;
 
-    public Expr( Word op) {
+    public Expr(Word op) {
         this.op = op;
     }
 
@@ -21,10 +18,10 @@ public class Expr extends Stmt {
 
     @Override
     public void gen() {
-       //reduce();
+        //reduce();
     }
 
-    public boolean canculculate(){
+    public boolean canculculate() {
         return false;
     }
 
@@ -37,7 +34,7 @@ public class Expr extends Stmt {
         return 0;
     }
 
-    public String getcontent(){
+    public String getcontent() {
         return op.getContent();
     }
     //    public Expr reduce() {

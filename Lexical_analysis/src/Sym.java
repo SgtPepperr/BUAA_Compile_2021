@@ -1,12 +1,12 @@
-import Word.Word;
 import Word.FormatWord;
+import Word.Word;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Sym {
-    private int line = 1;
     private final String source_string;
+    private int line = 1;
     private char[] source_char;
     private char[] prech;
     private String preprocess_string;
@@ -55,8 +55,8 @@ public class Sym {
             else if (array[i] == '/' && array[i + 1] == '*') {
                 i += 2;
                 while (array[i] != '*' || array[i + 1] != '/') {
-                    if(array[i]=='\n'){
-                        temp[index++]='\n';
+                    if (array[i] == '\n') {
+                        temp[index++] = '\n';
                     }
                     i++;
                 }
@@ -73,7 +73,7 @@ public class Sym {
             }
 
             //跳过空字符,同时保留换行符用来记录行数
-            if ( array[i] != '\r') {
+            if (array[i] != '\r') {
                 temp[index++] = array[i];
             }
         }
@@ -128,8 +128,8 @@ public class Sym {
         int last = 0;
         while (prech[index] != '$') {
             //跳过空字符
-            while (prech[index] == ' ' || prech[index] == '\t'||prech[index]=='\n') {
-                if(prech[index]=='\n')
+            while (prech[index] == ' ' || prech[index] == '\t' || prech[index] == '\n') {
+                if (prech[index] == '\n')
                     line++;
                 index++;
             }
@@ -145,7 +145,7 @@ public class Sym {
 //                } else {
 //                    words.add(new Word.Word(1, s, line));
 //                }
-                words.add(new Word(resword.getOrDefault(s,1),s,line));
+                words.add(new Word(resword.getOrDefault(s, 1), s, line));
                 index = last;
             } else if (Character.isDigit(prech[index])) {      //注意可能会有对前导0的特判
                 last = index;
@@ -155,29 +155,29 @@ public class Sym {
                 words.add(new Word(2, preprocess_string.substring(index, last), line));
                 index = last;
             } else if (prech[index] == '"') {
-                int count=0;
-                boolean flag=true;
+                int count = 0;
+                boolean flag = true;
                 last = index + 1;
                 while (prech[last] != '"') {
-                    if(prech[last]=='\\'){
-                        if(prech[last+1]!='n')
-                            flag=false;
-                    }else if(prech[last]=='%'){
-                        if(prech[last+1]=='d'){
+                    if (prech[last] == '\\') {
+                        if (prech[last + 1] != 'n')
+                            flag = false;
+                    } else if (prech[last] == '%') {
+                        if (prech[last + 1] == 'd') {
                             count++;
-                        }else {
-                            flag=false;
+                        } else {
+                            flag = false;
                         }
-                    }else if(prech[last]==32||prech[last]==33||prech[last]>=40&&prech[last]<=126){
+                    } else if (prech[last] == 32 || prech[last] == 33 || prech[last] >= 40 && prech[last] <= 126) {
                         last++;
                         continue;
-                    }else{
-                        flag=false;
+                    } else {
+                        flag = false;
                     }
-                   last++;
+                    last++;
                 }
-                words.add(new FormatWord(3, preprocess_string.substring(index, last), line,count,flag));
-                index = last+1;
+                words.add(new FormatWord(3, preprocess_string.substring(index, last), line, count, flag));
+                index = last + 1;
             } else if (prech[index] == '&') {
                 if (prech[index + 1] == '&') {
                     words.add(new Word(12, "&&", line));

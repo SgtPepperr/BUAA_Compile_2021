@@ -4,8 +4,8 @@ import Symbol_table.Symbols.ArraySymbol;
 import Symbol_table.Symbols.FuncSymbol;
 import Symbol_table.Symbols.NorSymbol;
 import Symbol_table.Symbols.VarSymbol;
-import Word.Word;
 import Word.FormatWord;
+import Word.Word;
 
 import java.util.ArrayList;
 import java.util.Arrays;

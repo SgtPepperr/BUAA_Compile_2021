@@ -35,8 +35,8 @@ public class Func extends Node {
         String type = functype == 0 ? "void" : "int";
         inttable = new IntergerTable(inttable);   //创建新作用域
 
-        int k=Block.getCount();
-        emit(new midCode(midCode.operation.LABEL,String.valueOf(k),"start"));
+        int k = Block.getCount();
+        emit(new midCode(midCode.operation.LABEL, String.valueOf(k), "start"));
         if (isMain) {
             emit(new midCode(midCode.operation.MAIN, "main"));
         } else {

@@ -1,6 +1,9 @@
 package Optim;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class Register {
     HashMap<String, String> maps = new HashMap<>();
@@ -8,9 +11,9 @@ public class Register {
     ArrayList<String> reverlists;
 
     public Register() {
-        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7");
+        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9");
         lists = new ArrayList<>(list);
-        reverlists=new ArrayList<>();
+        reverlists = new ArrayList<>();
     }
 
     public String findtemp(String name) {
@@ -20,12 +23,12 @@ public class Register {
         return reg;
     }
 
-    public String usetemp(String name) {
-        if (name.equals("$t3") || name.equals("$t4") || name.equals("$t5") || name.equals("$t6") || name.equals("$t7") ) {
-            lists.add(name);
-        }
-        return name;
-    }
+//    public String usetemp(String name) {
+//        if (name.equals("$t3") || name.equals("$t4") || name.equals("$t5") || name.equals("$t6") || name.equals("$t7") ) {
+//            lists.add(name);
+//        }
+//        return name;
+//    }
 
     public ArrayList<String> getReverlists() {
         return reverlists;
@@ -49,8 +52,8 @@ public class Register {
     }
 
     public void reset() {
-        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7");
+        List list = Arrays.asList("$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9");
         lists = new ArrayList<>(list);
-        reverlists=new ArrayList<>();
+        reverlists = new ArrayList<>();
     }
 }

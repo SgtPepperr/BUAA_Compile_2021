@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Print extends Stmt {
     Word format;
     ArrayList<Expr> exprs;
-    ArrayList<String> strings=new ArrayList<>();
+    ArrayList<String> strings = new ArrayList<>();
 
     public Print(Word format, ArrayList<Expr> exprs) {
         this.format = format;
@@ -18,17 +18,17 @@ public class Print extends Stmt {
     @Override
     public void gen() {
 
-        for(Expr e:exprs)
+        for (Expr e : exprs)
             e.canculculate();
 
-        int i=0;
+        int i = 0;
         Initial(format.getContent());
-        for(String s:strings){
-            if(!s.equals("%d")){
-                emit(new midCode(midCode.operation.PRINT,s,"string"));
+        for (String s : strings) {
+            if (!s.equals("%d")) {
+                emit(new midCode(midCode.operation.PRINT, s, "string"));
                 stringss.add(s);
-            }else{
-                emit(new midCode(midCode.operation.PRINT,exprs.get(i++).reduce().toString(),"digit"));
+            } else {
+                emit(new midCode(midCode.operation.PRINT, exprs.get(i++).reduce().toString(), "digit"));
                 //stringss.add(s);
             }
         }

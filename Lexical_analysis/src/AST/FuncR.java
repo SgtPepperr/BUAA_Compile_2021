@@ -16,7 +16,7 @@ public class FuncR extends Expr {
 
     @Override
     public Expr reduce() {
-        for(Expr ex:Rparas)
+        for (Expr ex : Rparas)
             ex.canculculate();
 
         for (Expr e : Rparas) {
@@ -24,7 +24,7 @@ public class FuncR extends Expr {
         }
         for (Expr s : Rafter) {
             if (s instanceof Array)
-                emit(new midCode(midCode.operation.PUSH, s.op.getContent(),((Array) s).temp.toString(),((Array) s).num2));
+                emit(new midCode(midCode.operation.PUSH, s.op.getContent(), ((Array) s).temp.toString(), ((Array) s).num2));
             else
                 emit(new midCode(midCode.operation.PUSH, s.toString()));
         }

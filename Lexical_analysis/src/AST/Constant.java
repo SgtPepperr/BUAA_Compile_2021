@@ -1,13 +1,10 @@
 package AST;
 
-import Midcode.midCode;
 import Word.Word;
 
-import java.util.ArrayList;
-
 public class Constant extends Expr {
-    public Constant( Word op) {
-        super( op);
+    public Constant(Word op) {
+        super(op);
     }
 
 //    public Constant(ArrayList<midCode> midCodes, int num) {
@@ -16,13 +13,13 @@ public class Constant extends Expr {
 
     @Override
     public int calculate() {
-       return Integer.parseInt(op.getContent());
+        return Integer.parseInt(op.getContent());
     }
 
     @Override
     public boolean canculculate() {
-       isvalue=true;
-       value=Integer.parseInt(op.getContent());
-       return true;
+        isvalue = true;
+        value = Integer.parseInt(op.getContent());
+        return true;
     }
 }

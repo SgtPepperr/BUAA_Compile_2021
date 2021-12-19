@@ -1,7 +1,5 @@
 package AST;
 
-import java.util.ArrayList;
-
 public class Def extends Node {
     Lval lval;
 

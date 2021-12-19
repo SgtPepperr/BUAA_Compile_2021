@@ -1,4 +1,4 @@
 package AST;
 
-public class BlockItem extends Node{
+public class BlockItem extends Node {
 }

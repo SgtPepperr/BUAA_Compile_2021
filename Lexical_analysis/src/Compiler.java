@@ -26,13 +26,13 @@ public class Compiler {
         String inputpath = "testfile.txt";
         String outputpath = "output.txt";
 
-        StringBuffer sb=new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         try {
-            Compiler.readToBuffer(sb,inputpath);
+            Compiler.readToBuffer(sb, inputpath);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String source=sb.toString();
+        String source = sb.toString();
 
 //                String source=null;
 //        try {
@@ -49,14 +49,14 @@ public class Compiler {
         }
         System.setOut(out);
 
-        Sym sym=new Sym(source);
-        Parsing parsing=new Parsing(sym.getWords());
-        Parsingtemp parsingtemp=new Parsingtemp(sym.getWords());
+        Sym sym = new Sym(source);
+        Parsing parsing = new Parsing(sym.getWords());
+        Parsingtemp parsingtemp = new Parsingtemp(sym.getWords());
         parsingtemp.analyse();
 
-        Optimize opt=new Optimize(parsingtemp.getMidCodes());
+        Optimize opt = new Optimize(parsingtemp.getMidCodes());
 
-        Mips mips=new Mips(opt.getNewmidCodes(), parsingtemp.getStrings());
+        Mips mips = new Mips(opt.getNewmidCodes(), parsingtemp.getStrings());
 //        try {
 //            Scanner in = new Scanner(new FileReader(inputpath));
 //            while (in.hasNextLine()) {

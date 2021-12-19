@@ -13,7 +13,7 @@ public class Decl extends BlockItem {
 
     @Override
     public void gen() {
-       for(Def d:defs)
-           d.gen();
+        for (Def d : defs)
+            d.gen();
     }
 }

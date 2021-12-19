@@ -5,17 +5,15 @@ import Symbol_table.IntergerTable;
 import Symbol_table.Symbols.ArraySymbol;
 import Word.Word;
 
-import java.util.ArrayList;
-
 public class Array extends Lval {
+    public Expr temp;
+    public String num2;
     private int onelevel = 0;
     private int twolevel = 0;
     private int fact = 0;
     private Expr oneindex = null;
     private Expr twoindex = null;
-    public Expr temp;
     private boolean ispointer = false;
-    public String num2;
 
     public Array(Word op, Expr oneindex, Expr twoindex) {
         super(op);
@@ -51,7 +49,7 @@ public class Array extends Lval {
 
     @Override
     public boolean canculculate() {
-        boolean ok1=oneindex.canculculate();
+        boolean ok1 = oneindex.canculculate();
 
         IntergerTable table = inttable;
         ArraySymbol sym = null;
@@ -66,25 +64,25 @@ public class Array extends Lval {
             if (twoindex == null) {
                 if (sym.getLevel2() != 0) {
                     return false;
-                }else{
-                    if(ok1){
-                        int k1= oneindex.value;
-                        isvalue=true;
-                        value=sym.getValue(k1);
+                } else {
+                    if (ok1) {
+                        int k1 = oneindex.value;
+                        isvalue = true;
+                        value = sym.getValue(k1);
                         return true;
-                    }else{
+                    } else {
                         return false;
                     }
                 }
             } else {
-                boolean ok2=twoindex.canculculate();
-                if(ok1&&ok2){
-                    int k1=oneindex.value;
-                    int k2=twoindex.value;
-                    isvalue=true;
-                    value=sym.getValue(k1 * sym.getLevel2() + k2);
+                boolean ok2 = twoindex.canculculate();
+                if (ok1 && ok2) {
+                    int k1 = oneindex.value;
+                    int k2 = twoindex.value;
+                    isvalue = true;
+                    value = sym.getValue(k1 * sym.getLevel2() + k2);
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }
@@ -122,7 +120,7 @@ public class Array extends Lval {
                 return this;
             } else {
 
-                if(isvalue){
+                if (isvalue) {
                     return new Constant(new Word(String.valueOf(value)));
                 }
 
@@ -132,7 +130,7 @@ public class Array extends Lval {
             }
         } else {
 
-            if(isvalue){
+            if (isvalue) {
                 return new Constant(new Word(String.valueOf(value)));
             }
 

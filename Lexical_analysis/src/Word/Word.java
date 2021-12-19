@@ -11,14 +11,14 @@ public class Word {
         this.line = line;
     }
 
-    public Word(){
-        this.symnumber=0;
-        this.content="";
+    public Word() {
+        this.symnumber = 0;
+        this.content = "";
     }
 
-    public Word(String content){
-        this.symnumber=0;
-        this.content=content;
+    public Word(String content) {
+        this.symnumber = 0;
+        this.content = content;
     }
 
     public int getSymnumber() {

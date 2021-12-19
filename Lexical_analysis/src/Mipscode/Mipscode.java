@@ -2,6 +2,37 @@ package Mipscode;
 
 
 public class Mipscode {
+    operation op;       //操作符
+    String z = null;           //结果
+    String x = null;           //左操作符
+    String y = null;           //右操作符
+    int imme;             //立即数
+    public Mipscode(operation op, String z, String x, String y) {
+        this.op = op;
+        this.z = z;
+        this.x = x;
+        this.y = y;
+    }
+
+    public Mipscode(operation op, String z) {
+        this.op = op;
+        this.z = z;
+    }
+
+    public Mipscode(operation op, String z, String x) {
+        this.op = op;
+        this.z = z;
+        this.x = x;
+    }
+
+    public Mipscode(operation op, String z, String x, String y, int imme) {
+        this.op = op;
+        this.z = z;
+        this.x = x;
+        this.y = y;
+        this.imme = imme;
+    }
+
     public enum operation {
         add,
         addu,
@@ -40,37 +71,5 @@ public class Mipscode {
         asciizSeg,  //.asciiz
         globlSeg,  //.globl
         label,  //产生标号
-    }
-
-    operation op;       //操作符
-    String z = null;           //结果
-    String x = null;           //左操作符
-    String y = null;           //右操作符
-    int imme;             //立即数
-
-    public Mipscode(operation op, String z, String x, String y) {
-        this.op = op;
-        this.z = z;
-        this.x = x;
-        this.y = y;
-    }
-
-    public Mipscode(operation op, String z) {
-        this.op = op;
-        this.z = z;
-    }
-
-    public Mipscode(operation op, String z, String x) {
-        this.op = op;
-        this.z = z;
-        this.x = x;
-    }
-
-    public Mipscode(operation op, String z, String x, String y, int imme) {
-        this.op = op;
-        this.z = z;
-        this.x = x;
-        this.y = y;
-        this.imme = imme;
     }
 }

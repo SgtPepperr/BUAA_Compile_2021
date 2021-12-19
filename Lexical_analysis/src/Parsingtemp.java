@@ -3,25 +3,16 @@ import Midcode.midCode;
 import Word.Word;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Parsingtemp {
-    private enum Symbol {
-        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
-        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
-        MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
-        RBRACK, LBRACE, RBRACE
-    }
-
-    private ArrayList<midCode> midCodes=new ArrayList<>();
-    private LinkedList<String> strings=new LinkedList<>();
+    private ArrayList<midCode> midCodes = new ArrayList<>();
+    private LinkedList<String> strings = new LinkedList<>();
     private Program root;
     private ArrayList<Word> words;
     private int label = 0;           //区分不同基本块标签
     private int temp = 0;            //区分不同临时变量
     private int index = 0;
-
     public Parsingtemp(ArrayList<Word> words) {
         this.words = words;
     }
@@ -37,9 +28,9 @@ public class Parsingtemp {
     public void analyse() {
         CompUnit();
         root.gen();
-        midCodes=root.getMidCodes();
-        midCodes.add(new midCode(midCode.operation.EXIT,null));
-        strings=root.getStringss();
+        midCodes = root.getMidCodes();
+        midCodes.add(new midCode(midCode.operation.EXIT, null));
+        strings = root.getStringss();
         outputMidcode();
     }
 
@@ -78,11 +69,6 @@ public class Parsingtemp {
         System.out.print("---------------wrong-------------");
     }
 
-//    private void output() {
-//        System.out.print(Parsing.Symbol.values()[words.get(index).getSymnumber()]);
-//        System.out.print(' ' + words.get(index).getContent() + '\n');
-//    }
-
     private void CompUnit() {
         LinkedList<Decl> decls = new LinkedList<>();
         LinkedList<Func> funcs = new LinkedList<>();
@@ -95,6 +81,11 @@ public class Parsingtemp {
         root = new Program(decls, funcs);
 //        System.out.print("<CompUnit>\n");
     }
+
+//    private void output() {
+//        System.out.print(Parsing.Symbol.values()[words.get(index).getSymnumber()]);
+//        System.out.print(' ' + words.get(index).getContent() + '\n');
+//    }
 
     private Decl Decl() {
         if (showWord().getContent().equals("const")) {
@@ -133,7 +124,7 @@ public class Parsingtemp {
 
     private Def ConstDef() {
         Word w = getWord();
-        Lval lval=null;
+        Lval lval = null;
         Expr expr1 = null;
         Expr expr2 = null;
         ArrayList<Expr> exprs = new ArrayList<>();
@@ -168,7 +159,7 @@ public class Parsingtemp {
         } else {
             error();
         }
-        return new ConstDef(lval,exprs);
+        return new ConstDef(lval, exprs);
 //        System.out.print("<ConstDef>\n");
     }
 
@@ -194,7 +185,7 @@ public class Parsingtemp {
     }
 
     private Decl VarDecl() {
-        LinkedList<Def> defs=new LinkedList<>();
+        LinkedList<Def> defs = new LinkedList<>();
         BType();
         defs.add(VarDef());
         while (showWord().getContent().equals(",")) {
@@ -204,15 +195,15 @@ public class Parsingtemp {
         if (!getWord().getContent().equals(";")) {
             error();
         }
-        return new Decl(defs,false);
+        return new Decl(defs, false);
 //        System.out.print("<VarDecl>\n");
     }
 
     private Def VarDef() {
 
         Word w = getWord();
-        int level=0;    //变量初始化层次
-        Lval lval=null;
+        int level = 0;    //变量初始化层次
+        Lval lval = null;
         Expr expr1 = null;
         Expr expr2 = null;
         ArrayList<ArrayList<Expr>> exprs = new ArrayList<>();
@@ -241,61 +232,61 @@ public class Parsingtemp {
 
             if (showWord().getContent().equals("=")) {
                 getWord();
-                InitVal(exprs,level);
+                InitVal(exprs, level);
             }
 
         } else {
             error();
         }
-        return new VarDef(lval,exprs);
+        return new VarDef(lval, exprs);
 //        System.out.print("<VarDef>\n");
     }
 
-    private void InitVal(ArrayList<ArrayList<Expr>> exprs,int level) {
+    private void InitVal(ArrayList<ArrayList<Expr>> exprs, int level) {
         if (showWord().getContent().equals("{")) {
-            if(level==1)
+            if (level == 1)
                 exprs.add(new ArrayList<>());
             getWord();
             if (showWord().getContent().equals("}")) {
                 getWord();
             } else {
-                InitVal(exprs,level+1);
+                InitVal(exprs, level + 1);
                 while (showWord().getContent().equals(",")) {
                     getWord();
-                    InitVal(exprs,level+1);
+                    InitVal(exprs, level + 1);
                 }
                 if (!getWord().getContent().equals("}")) {
                     error();
                 }
             }
         } else {
-            if(exprs.size()==0){
+            if (exprs.size() == 0) {
                 exprs.add(new ArrayList<>());
             }
-            exprs.get(exprs.size()-1).add(Exp());
+            exprs.get(exprs.size() - 1).add(Exp());
         }
 //        System.out.print("<InitVal>\n");
     }
 
     private Func FuncDef() {
-        int functype=FuncType();
-        Id id=new Id(getWord());
-        ArrayList<Fparam> paras=new ArrayList<>();
+        int functype = FuncType();
+        Id id = new Id(getWord());
+        ArrayList<Fparam> paras = new ArrayList<>();
         Block block;
         if (!getWord().getContent().equals("(")) {
             error();
         }
         if (showWord().getContent().equals(")")) {
             getWord();
-            block=Block();
+            block = Block();
         } else {
-            paras=FuncFParams();
+            paras = FuncFParams();
             if (!getWord().getContent().equals(")")) {
                 error();
             }
-            block=Block();
+            block = Block();
         }
-        return new Func(functype,id,paras,block);
+        return new Func(functype, id, paras, block);
 //        System.out.print("<FuncDef>\n");
     }
 
@@ -304,24 +295,24 @@ public class Parsingtemp {
         getWord();
         getWord();
         getWord();
-        Block block=Block();
-        return new Func(1,new Id(new Word("main")),new ArrayList<>(),block,true);
+        Block block = Block();
+        return new Func(1, new Id(new Word("main")), new ArrayList<>(), block, true);
 //        System.out.print("<MainFuncDef>\n");
     }
 
     private int FuncType() {
         String s = getWord().getContent();
 //        System.out.print("<FuncType>\n");
-        if(s.equals("void"))
+        if (s.equals("void"))
             return 0;
-        else if(s.equals("int"))
+        else if (s.equals("int"))
             return 1;
         else
             return -1;
     }
 
     private ArrayList<Fparam> FuncFParams() {
-        ArrayList<Fparam> list=new ArrayList<>();
+        ArrayList<Fparam> list = new ArrayList<>();
         list.add(FuncFParam());
         while (showWord().getContent().equals(",")) {
             getWord();
@@ -333,9 +324,9 @@ public class Parsingtemp {
 
     private Fparam FuncFParam() {
         BType();
-        int count=0;
-        Expr expr=null;
-        Id id=new Id(getWord());
+        int count = 0;
+        Expr expr = null;
+        Id id = new Id(getWord());
         if (showWord().getContent().equals("[")) {
             count++;
             getWord();
@@ -344,30 +335,30 @@ public class Parsingtemp {
             while (showWord().getContent().equals("[")) {
                 count++;
                 getWord();
-                expr=ConstExp();
+                expr = ConstExp();
                 if (!getWord().getContent().equals("]"))
                     error();
             }
         }
-        return new Fparam(id,count,expr);
+        return new Fparam(id, count, expr);
 //        System.out.print("<FuncFParam>\n");
     }
 
     private Block Block() {
-        ArrayList<BlockItem> items=new ArrayList<>();
+        ArrayList<BlockItem> items = new ArrayList<>();
         if (!getWord().getContent().equals("{")) {
             error();
         }
         if (showWord().getContent().equals("}")) {
             getWord();
         } else {
-            BlockItem item=BlockItem();
-            if(item!=null) {
+            BlockItem item = BlockItem();
+            if (item != null) {
                 items.add(item);
             }
             while (!showWord().getContent().equals("}")) {
-                item=BlockItem();
-                if(item!=null) {
+                item = BlockItem();
+                if (item != null) {
                     items.add(item);
                 }
             }
@@ -388,19 +379,19 @@ public class Parsingtemp {
 
     private Stmt Stmt() {
         if (showWord().getContent().equals("if")) {
-            Stmt stmt2=null;
+            Stmt stmt2 = null;
             getWord();
             if (!getWord().getContent().equals("("))
                 error();
-            Or or=Cond();
+            Or or = Cond();
             if (!getWord().getContent().equals(")"))
                 error();
-            Stmt stmt1=Stmt();
+            Stmt stmt1 = Stmt();
             if (showWord().getContent().equals("else")) {
                 getWord();
-                stmt2=Stmt();
+                stmt2 = Stmt();
             }
-                return new If(or,stmt1,stmt2);
+            return new If(or, stmt1, stmt2);
 
         } else if (showWord().getContent().equals("{")) {
             return Block();
@@ -408,42 +399,42 @@ public class Parsingtemp {
             getWord();
             if (!getWord().getContent().equals("("))
                 error();
-            Or or=Cond();
+            Or or = Cond();
             if (!getWord().getContent().equals(")"))
                 error();
-            Stmt stmt=Stmt();
-            return new While(or,stmt);
+            Stmt stmt = Stmt();
+            return new While(or, stmt);
         } else if (showWord().getContent().equals("break") || showWord().getContent().equals("continue")) {
-            int flag=0;
-            if(getWord().getContent().equals("break")){
-                flag=1;
+            int flag = 0;
+            if (getWord().getContent().equals("break")) {
+                flag = 1;
             }
             if (!getWord().getContent().equals(";")) {
                 error();
             }
-            if(flag==1){
+            if (flag == 1) {
                 return new Break();
-            }else{
+            } else {
                 return new Continue();
             }
         } else if (showWord().getContent().equals("return")) {
-            Expr expr=null;
+            Expr expr = null;
             getWord();
             if (showWord().getContent().equals(";")) {
                 getWord();
             } else {
-                expr=Exp();
+                expr = Exp();
                 if (!getWord().getContent().equals(";"))
                     error();
             }
             return new Ret(expr);
         } else if (showWord().getContent().equals("printf")) {
             Word format;
-            ArrayList<Expr> exprs=new ArrayList<>();
+            ArrayList<Expr> exprs = new ArrayList<>();
             getWord();
             if (!getWord().getContent().equals("("))
                 error();
-            format=getWord();
+            format = getWord();
             while (showWord().getContent().equals(",")) {
                 getWord();
                 exprs.add(Exp());
@@ -452,7 +443,7 @@ public class Parsingtemp {
                 error();
             if (!getWord().getContent().equals(";"))
                 error();
-            return new Print(format,exprs);
+            return new Print(format, exprs);
         } else if (showWord().getContent().equals(";")) {
             getWord();
         } else if (showWord().getSymnumber() == 1) {
@@ -483,7 +474,7 @@ public class Parsingtemp {
             }
 
             if (flag1 == 1) {
-                Lval lval= (Lval) LVal();
+                Lval lval = (Lval) LVal();
                 getWord();
                 if (showWord().getContent().equals("getint")) {
                     getWord();
@@ -495,19 +486,19 @@ public class Parsingtemp {
                         error();
                     return new Scanf(lval);
                 } else {
-                    Expr expr=Exp();
+                    Expr expr = Exp();
                     if (!getWord().getContent().equals(";"))
                         error();
-                    return new Assign(lval,expr);
+                    return new Assign(lval, expr);
                 }
             } else {
-                Expr expr=Exp();
+                Expr expr = Exp();
                 if (!getWord().getContent().equals(";"))
                     error();
                 return expr;
             }
         } else {
-            Expr expr=Exp();
+            Expr expr = Exp();
             if (!getWord().getContent().equals(";"))
                 error();
             return expr;
@@ -530,8 +521,8 @@ public class Parsingtemp {
     private Expr LVal() {
         Word id = getWord();
         int flag = 0;
-        Expr exp1=null;
-        Expr exp2=null;
+        Expr exp1 = null;
+        Expr exp2 = null;
         while (showWord().getContent().equals("[")) {
             flag++;
             getWord();
@@ -546,11 +537,11 @@ public class Parsingtemp {
             }
         }
         if (flag == 0) {
-            return new Id( id);
+            return new Id(id);
         } else if (flag == 1) {
-            return new Array(id,exp1);
+            return new Array(id, exp1);
         } else {
-            return new Array(id,exp1,exp2);
+            return new Array(id, exp1, exp2);
         }
 //        System.out.print("<LVal>\n");
     }
@@ -558,7 +549,7 @@ public class Parsingtemp {
     private Expr PrimaryExp() {
         if (showWord().getContent().equals("(")) {
             getWord();
-            Expr expr=Exp();
+            Expr expr = Exp();
             if (!getWord().getContent().equals(")")) {
                 error();
             }
@@ -582,21 +573,21 @@ public class Parsingtemp {
     private Expr UnaryExp() {
         String s = showWord().getContent();
         if (showWord().getSymnumber() == 1 && showWord(index + 1).getContent().equals("(")) {
-            Word w=getWord();
-            ArrayList<Expr> exprs=new ArrayList<>();
+            Word w = getWord();
+            ArrayList<Expr> exprs = new ArrayList<>();
             getWord();
             if (showWord().getContent().equals(")")) {
                 getWord();
             } else {
-                exprs=FuncRParams();
+                exprs = FuncRParams();
                 if (!getWord().getContent().equals(")"))
                     error();
             }
-            return new FuncR(w,exprs);
+            return new FuncR(w, exprs);
         } else if (s.equals("+") || s.equals("-") || s.equals("!")) {
-            Word w=UnaryOp();
-            Expr expr=UnaryExp();
-            return new Unary(w,expr);
+            Word w = UnaryOp();
+            Expr expr = UnaryExp();
+            return new Unary(w, expr);
         } else {
             return PrimaryExp();
         }
@@ -608,7 +599,7 @@ public class Parsingtemp {
     }
 
     private ArrayList<Expr> FuncRParams() {
-        ArrayList<Expr> exprs=new ArrayList<>();
+        ArrayList<Expr> exprs = new ArrayList<>();
         exprs.add(Exp());
         while (showWord().getContent().equals(",")) {
             getWord();
@@ -626,7 +617,7 @@ public class Parsingtemp {
 //                System.out.print("<MulExp>\n");
                 Word w = getWord();
                 Expr expr2 = UnaryExp();
-                expr1 = new Arith( w, expr1, expr2);
+                expr1 = new Arith(w, expr1, expr2);
             } else {
                 break;
             }
@@ -641,21 +632,21 @@ public class Parsingtemp {
 //            System.out.print("<AddExp>\n");
             Word w = getWord();
             Expr expr2 = MulExp();
-            expr1 = new Arith( w, expr1, expr2);
+            expr1 = new Arith(w, expr1, expr2);
         }
         return expr1;
 //        System.out.print("<AddExp>\n");
     }
 
     private Expr RelExp() {
-        Expr expr1=AddExp();
+        Expr expr1 = AddExp();
         while (true) {
             String s = showWord().getContent();
             if (s.equals("<") || s.equals(">") || s.equals("<=") || s.equals(">=")) {
 //                System.out.print("<RelExp>\n");
-                Word w=getWord();
-                Expr expr2=AddExp();
-                expr1=new Logical(w,expr1,expr2);
+                Word w = getWord();
+                Expr expr2 = AddExp();
+                expr1 = new Logical(w, expr1, expr2);
             } else {
                 break;
             }
@@ -665,19 +656,19 @@ public class Parsingtemp {
     }
 
     private Expr EqExp() {
-        Expr expr1=RelExp();
+        Expr expr1 = RelExp();
         while (showWord().getContent().equals("==") || showWord().getContent().equals("!=")) {
 //            System.out.print("<EqExp>\n");
-            Word w=getWord();
-            Expr expr2=RelExp();
-            expr1=new Logical(w,expr1,expr2);
+            Word w = getWord();
+            Expr expr2 = RelExp();
+            expr1 = new Logical(w, expr1, expr2);
         }
         return expr1;
 //        System.out.print("<EqExp>\n");
     }
 
     private And LAndExp() {
-        ArrayList<Expr> exprs=new ArrayList<>();
+        ArrayList<Expr> exprs = new ArrayList<>();
         exprs.add(EqExp());
         while (showWord().getContent().equals("&&")) {
 //            System.out.print("<LAndExp>\n");
@@ -689,7 +680,7 @@ public class Parsingtemp {
     }
 
     private Or LOrExp() {
-        ArrayList<And> ands=new ArrayList<>();
+        ArrayList<And> ands = new ArrayList<>();
         ands.add(LAndExp());
         while (showWord().getContent().equals("||")) {
 //            System.out.print("<LOrExp>\n");
@@ -704,6 +695,13 @@ public class Parsingtemp {
         Expr e = AddExp();
         return e;
 //        System.out.print("<ConstExp>\n");
+    }
+
+    private enum Symbol {
+        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
+        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
+        MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN, COMMA, LPARENT, RPARENT, LBRACK,
+        RBRACK, LBRACE, RBRACE
     }
 
 }
