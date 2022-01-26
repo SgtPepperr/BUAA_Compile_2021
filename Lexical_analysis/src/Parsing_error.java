@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class Parsing {
+public class Parsing_error {
 //    private enum Symbol {
 //        A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
 //        NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
@@ -33,11 +33,15 @@ public class Parsing {
     private ArrayList<Integer> maxarray = new ArrayList<>();
     private int intofunc = 0;
 
-    public Parsing(ArrayList<Word> words) {
+    public Parsing_error(ArrayList<Word> words) {
         this.words = words;
         maxarray.add(0);
         analyse();
-        errorout();
+        if (errorcount>0){
+            System.out.println("Something is wrong with your code\nBelows are your problems");
+            errorout();
+            System.exit(1);
+        }
     }
 
     public void analyse() {
