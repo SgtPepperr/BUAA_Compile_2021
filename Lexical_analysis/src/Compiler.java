@@ -20,8 +20,7 @@ public class Compiler {
 
 
     public static void main(String[] args) {
-//        String inputpath = "D:\\compile\\Lexical_analysis\\src\\testfile.txt";
-//        String outputpath = "D:\\compile\\Lexical_analysis\\src\\output.txt";
+
         String inputpath = "testfile.txt";
         String outputpath = "output.txt";
 
@@ -33,12 +32,6 @@ public class Compiler {
         }
         String source=sb.toString();
 
-//                String source=null;
-//        try {
-//            source = Files.readString(Paths.get(inputpath));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         PrintStream out = null;
         try {
@@ -48,21 +41,17 @@ public class Compiler {
         }
         System.setOut(out);
 
+        //1.词法分析程序,生成单词列表
         Sym sym=new Sym(source);
-        Parsing parsing=new Parsing(sym.getWords());
-        Parsingtemp parsingtemp=new Parsingtemp(sym.getWords());
+        //2.语法分析程序&错误处理程序,有错误直接结束程序
+        Parsing_error parsing=new Parsing_error(sym.getWords());
+        //3.语法分析程序，生成AST抽象语法树
+        Parsing_mid parsingtemp=new Parsing_mid(sym.getWords());
+        parsingtemp.CompUnit();
+        //4.解析抽象语法树，生成中间代码
         parsingtemp.analyse();
-
+        //5.目标代码生成程序，输入中间代码，生成目标代码
         Mips mips=new Mips(parsingtemp.getMidCodes(), parsingtemp.getStrings());
-//        try {
-//            Scanner in = new Scanner(new FileReader(inputpath));
-//            while (in.hasNextLine()) {
-//                String line = in.nextLine();
-//                System.out.println(line);
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
 
     }
 }

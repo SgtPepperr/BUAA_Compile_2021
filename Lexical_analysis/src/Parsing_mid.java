@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Parsingtemp {
+public class Parsing_mid {
     private enum Symbol {
         A, IDENFR, INTCON, STRCON, MAINTK, CONSTTK, INTTK, BREAKTK, CONTINUETK, IFTK, ELSETK,
         NOT, AND, OR, WHILETK, GETINTTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT, DIV,
@@ -22,7 +22,7 @@ public class Parsingtemp {
     private int temp = 0;            //区分不同临时变量
     private int index = 0;
 
-    public Parsingtemp(ArrayList<Word> words) {
+    public Parsing_mid(ArrayList<Word> words) {
         this.words = words;
     }
 
@@ -35,12 +35,12 @@ public class Parsingtemp {
     }
 
     public void analyse() {
-        CompUnit();
+//        CompUnit();
         root.gen();
         midCodes=root.getMidCodes();
         midCodes.add(new midCode(midCode.operation.EXIT,null));
         strings=root.getStringss();
-//        outputMidcode();
+        outputMidcode();
     }
 
     public void outputMidcode() {
@@ -83,7 +83,7 @@ public class Parsingtemp {
 //        System.out.print(' ' + words.get(index).getContent() + '\n');
 //    }
 
-    private void CompUnit() {
+    public void CompUnit() {
         LinkedList<Decl> decls = new LinkedList<>();
         LinkedList<Func> funcs = new LinkedList<>();
 
