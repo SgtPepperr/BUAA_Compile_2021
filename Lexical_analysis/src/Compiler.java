@@ -51,21 +51,10 @@ public class Compiler {
         parsingtemp.CompUnit();
         //4.解析抽象语法树，生成中间代码
         parsingtemp.analyse();
-        //5.目标代码生成程序，输入中间代码，生成目标代码
-        Mips mips=new Mips(parsingtemp.getMidCodes(), parsingtemp.getStrings());
-
+        //5.中间代码优化
         Optimize opt = new Optimize(parsingtemp.getMidCodes());
-
+        //6.目标代码生成程序，输入中间代码，生成目标代码
         Mips mips = new Mips(opt.getNewmidCodes(), parsingtemp.getStrings());
-//        try {
-//            Scanner in = new Scanner(new FileReader(inputpath));
-//            while (in.hasNextLine()) {
-//                String line = in.nextLine();
-//                System.out.println(line);
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
 
     }
 }

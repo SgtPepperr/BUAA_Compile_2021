@@ -22,7 +22,7 @@ public class Parsing_mid {
     private int temp = 0;            //区分不同临时变量
     private int index = 0;
 
-    public Parsingtemp(ArrayList<Word> words) {
+    public Parsing_mid(ArrayList<Word> words) {
         this.words = words;
     }
 
@@ -78,7 +78,7 @@ public class Parsing_mid {
         System.out.print("---------------wrong-------------");
     }
 
-    private void CompUnit() {
+    public void CompUnit() {
         LinkedList<Decl> decls = new LinkedList<>();
         LinkedList<Func> funcs = new LinkedList<>();
 
