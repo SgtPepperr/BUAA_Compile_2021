@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="compile:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/compile_jar</output-path>
+    <root id="root">
+      <element id="archive" name="compile.jar">
+        <element id="module-output" name="compile" />
+      </element>
+    </root>
+  </artifact>
+</component>

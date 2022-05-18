@@ -1,0 +1,280 @@
+const int a = 1
+const int b = 13
+array int _a_b[1]
+_a_b[0] = 5
+array int _a_3_b[2][1]
+_a_3_b[0] = 0
+_a_3_b[1] = 12
+var int c
+array int d[1]
+array int _a_4_b[2][1]
+_a_4_b[0] = 0
+t&2 = 3452 % 2
+t&3 = 4 * 3
+t&1 = t&2 + t&3
+_a_4_b[1] = t&1
+var int z
+var int _d_e = 1
+var int glo_1
+var int glo_2
+var int glo_3
+var int glo_4
+var int glo_5
+var int glo_6
+var int glo_7
+var int glo_8
+var int glo_9
+    <LABEL 1 start>
+int test_1( )
+para int var_1
+para int var_2[]
+para int var_3[][1]
+t&8 = var_2[0]
+t&7 = var_1 + t&8
+t&9 = 0 * 1
+t&10 = t&9 + 0
+t&11 = var_3[t&10]
+t&6 = t&7 + t&11
+t&5 = t&6 + 3452340
+t&4 = t&5 + 0
+c = t&4
+RET  c
+RET null
+    <LABEL 1 end>
+    <LABEL 2 start>
+int test_2( )
+para int var_6
+z = var_6
+t&15 = 6 % 4
+t&14 = t&15 / 2
+t&13 = z + t&14
+t&12 = t&13 * 2
+RET  t&12
+RET null
+    <LABEL 2 end>
+    <LABEL 3 start>
+void test_3( )
+RET null
+    <LABEL 3 end>
+    <LABEL 4 start>
+void test_4( )
+RET null
+RET null
+    <LABEL 4 end>
+    <LABEL 5 start>
+int test_5( )
+RET  2
+RET null
+    <LABEL 5 end>
+    <LABEL 6 start>
+
+MAIN
+
+const int f = 1
+const int g = 13
+array int _a_b_[1]
+_a_b_[0] = 1
+array int _a_3_b_d[2][1]
+_a_3_b_d[0] = 0
+_a_3_b_d[1] = 12
+var int c
+array int d[1]
+array int _a_4_b_d[2][1]
+_a_4_b_d[0] = 0
+t&17 = 3452 % 2
+t&18 = 4 * 3
+t&16 = t&17 + t&18
+_a_4_b_d[1] = t&16
+t&22 = 0 * 1
+t&23 = t&22 + 0
+t&24 = _a_3_b_d[t&23]
+t&25 = 0 * 1
+t&26 = t&25 + 0
+t&27 = _a_4_b_d[t&26]
+t&21 = t&24 + t&27
+t&20 = t&21 * b
+t&19 = t&20 + 1
+var int _d_e_g = t&19
+d[0] = 1
+t&28 = 0 * 1
+t&29 = t&28 + 0
+_a_4_b_d[t&29] = 1
+t&31 = 0 * 1
+t&32 = t&31 + 0
+t&33 = _a_4_b_d[t&32]
+t&30 = _d_e_g + t&33
+c = t&30
+t&35 = d[0]
+t&34 = 0 - t&35
+c = t&34
+scan glo_1
+scan glo_2
+scan glo_3
+scan glo_4
+scan glo_5
+scan glo_6
+scan glo_7
+scan glo_8
+scan glo_9
+call test_5
+retvalue t&41
+t&40 = 0 - t&41
+t&39 = 0 - t&40
+push c
+push d
+push _a_4_b_d
+call test_1
+retvalue t&42
+t&38 = t&39 + t&42
+t&43 = 0 * 1
+t&44 = t&43 + 0
+t&45 = _a_4_b_d[t&44]
+push t&45
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&46
+t&37 = t&38 + t&46
+t&47 = 0 * 1
+t&48 = t&47 + 0
+t&49 = _a_4_b_d[t&48]
+push t&49
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&50
+t&36 = t&37 - t&50
+c = t&36
+push c
+call test_2
+retvalue t&51
+z = t&51
+        <JUMPDST LOOP1---begin>
+t&52 = glo_9 >= 0
+if t&52 == 0 then goto Jump3
+GOTO Jump2
+        <JUMPDST JUMP3>
+if 0 == 0 then goto Jump4
+if 1 == 0 then goto Jump4
+GOTO Jump2
+        <JUMPDST JUMP4>
+t&53 = 0 == 0
+if t&53 == 0 then goto Jump5
+t&54 = glo_1 < 0
+if t&54 == 0 then goto Jump5
+t&55 = 0 <= glo_8
+if t&55 == 0 then goto Jump5
+t&56 = glo_7 > 0
+if t&56 == 0 then goto Jump5
+t&57 = glo_6 != glo_5
+if t&57 == 0 then goto Jump5
+t&62 = glo_4 % 2
+t&61 = t&62 / 2
+push c
+push d
+push _a_4_b_d
+call test_1
+retvalue t&63
+t&60 = t&61 + t&63
+t&64 = 0 * 1
+t&65 = t&64 + 0
+t&66 = _a_4_b_d[t&65]
+push t&66
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&67
+t&59 = t&60 + t&67
+t&69 = 0 * 1
+t&70 = t&69 + 0
+t&71 = _a_4_b_d[t&70]
+push t&71
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&72
+t&68 = t&72 * 20
+t&58 = t&59 - t&68
+if t&58 == 0 then goto Jump5
+t&73 = glo_6 == glo_6
+if t&73 == 0 then goto Jump5
+GOTO Jump2
+        <JUMPDST JUMP5>
+GOTO Loop1end
+        <JUMPDST JUMP2>
+    <LABEL 7 start>
+t&74 = glo_2 > 1
+if t&74 == 0 then goto Jump9
+GOTO Jump8
+        <JUMPDST JUMP9>
+GOTO Jump6
+        <JUMPDST JUMP8>
+    <LABEL 8 start>
+t&75 = glo_2 - 1
+glo_2 = t&75
+t&76 = glo_9 - 1
+glo_9 = t&76
+GOTO Loop1begin
+    <LABEL 8 end>
+GOTO Jump7
+        <JUMPDST JUMP6>
+    <LABEL 9 start>
+t&77 = glo_2 - 1
+glo_2 = t&77
+t&78 = glo_1 - 1
+glo_1 = t&78
+t&79 = glo_1 < 0
+if t&79 == 0 then goto Jump13
+GOTO Jump12
+        <JUMPDST JUMP13>
+GOTO Jump10
+        <JUMPDST JUMP12>
+    <LABEL 10 start>
+t&80 = glo_8 - 1
+glo_8 = t&80
+GOTO Loop1end
+    <LABEL 10 end>
+GOTO Jump11
+        <JUMPDST JUMP10>
+    <LABEL 11 start>
+    <LABEL 11 end>
+        <JUMPDST JUMP11>
+    <LABEL 9 end>
+        <JUMPDST JUMP7>
+    <LABEL 7 end>
+GOTO Loop1begin
+        <JUMPDST LOOP1---end>
+print "19231076\n"
+print ">/!~varg1 is:"
+print glo_1
+print ";~\n"
+print ">/!~varg2 is:"
+print glo_2
+print ";~\n"
+print ">/!~varg3 is:"
+print glo_3
+print ";~\n"
+print ">/!~varg4 is:"
+print glo_4
+print ";~\n"
+print ">/!~varg5 is:"
+print glo_5
+print ";~\n"
+print ">/!~varg6 is:"
+print glo_6
+print ";~\n"
+print ">/!~varg7 is:"
+print glo_7
+print ";~\n"
+print ">/!~varg8 is:"
+print glo_8
+print ";~\n"
+print ">/!~varg9 is:"
+print glo_9
+print ";~\n"
+RET  0
+RET null
+    <LABEL 6 end>
+
+-----------------EXIT--------------
+

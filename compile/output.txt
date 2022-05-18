@@ -1,0 +1,268 @@
+const int a = 1
+const int b = 13
+array int _a_b[1]
+_a_b[0] = 5
+array int _a_3_b[2][1]
+_a_3_b[0] = 0
+_a_3_b[1] = 12
+var int c
+array int d[1]
+array int _a_4_b[2][1]
+_a_4_b[0] = 0
+_a_4_b[1] = 12
+var int z
+var int _d_e = 1
+var int glo_1
+var int glo_2
+var int glo_3
+var int glo_4
+var int glo_5
+var int glo_6
+var int glo_7
+var int glo_8
+var int glo_9
+    <LABEL 1 start>
+int test_1( )
+para int var_1
+para int var_2[]
+para int var_3[][1]
+t&5 = var_2[0]
+t&4 = var_1 + t&5
+t&6 = 0 * 1
+t&7 = t&6 + 0
+t&8 = var_3[t&7]
+t&3 = t&4 + t&8
+t&2 = t&3 + 3452340
+t&1 = t&2 + 0
+c = t&1
+RET  c
+RET null
+    <LABEL 1 end>
+    <LABEL 2 start>
+int test_2( )
+para int var_6
+z = var_6
+t&10 = z + 1
+t&9 = t&10 * 2
+RET  t&9
+RET null
+    <LABEL 2 end>
+    <LABEL 3 start>
+void test_3( )
+RET null
+    <LABEL 3 end>
+    <LABEL 4 start>
+void test_4( )
+RET null
+RET null
+    <LABEL 4 end>
+    <LABEL 5 start>
+int test_5( )
+RET  2
+RET null
+    <LABEL 5 end>
+    <LABEL 6 start>
+
+MAIN
+
+const int f = 1
+const int g = 13
+array int _a_b_[1]
+_a_b_[0] = 1
+array int _a_3_b_d[2][1]
+_a_3_b_d[0] = 0
+_a_3_b_d[1] = 12
+var int c
+array int d[1]
+array int _a_4_b_d[2][1]
+_a_4_b_d[0] = 0
+_a_4_b_d[1] = 12
+t&14 = 0 * 1
+t&15 = t&14 + 0
+t&16 = _a_4_b_d[t&15]
+t&13 = 0 + t&16
+t&12 = t&13 * 13
+t&11 = t&12 + 1
+var int _d_e_g = t&11
+d[0] = 1
+t&17 = 0 * 1
+t&18 = t&17 + 0
+_a_4_b_d[t&18] = 1
+t&20 = 0 * 1
+t&21 = t&20 + 0
+t&22 = _a_4_b_d[t&21]
+t&19 = _d_e_g + t&22
+c = t&19
+t&24 = d[0]
+t&23 = 0 - t&24
+c = t&23
+scan glo_1
+scan glo_2
+scan glo_3
+scan glo_4
+scan glo_5
+scan glo_6
+scan glo_7
+scan glo_8
+scan glo_9
+call test_5
+retvalue t&30
+t&29 = 0 - t&30
+t&28 = 0 - t&29
+push c
+push d
+push _a_4_b_d
+call test_1
+retvalue t&31
+t&27 = t&28 + t&31
+t&32 = 0 * 1
+t&33 = t&32 + 0
+t&34 = _a_4_b_d[t&33]
+push t&34
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&35
+t&26 = t&27 + t&35
+t&36 = 0 * 1
+t&37 = t&36 + 0
+t&38 = _a_4_b_d[t&37]
+push t&38
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&39
+t&25 = t&26 - t&39
+c = t&25
+push c
+call test_2
+retvalue t&40
+z = t&40
+        <JUMPDST Loop1begin>
+t&41 = glo_9 >= 0
+if t&41 == 0 then goto Jump3
+GOTO Jump2
+        <JUMPDST Jump3>
+if 0 == 0 then goto Jump4
+if 1 == 0 then goto Jump4
+GOTO Jump2
+        <JUMPDST Jump4>
+if 1 == 0 then goto Jump5
+t&42 = glo_1 < 0
+if t&42 == 0 then goto Jump5
+t&43 = 0 <= glo_8
+if t&43 == 0 then goto Jump5
+t&44 = glo_7 > 0
+if t&44 == 0 then goto Jump5
+t&45 = glo_6 != glo_5
+if t&45 == 0 then goto Jump5
+t&50 = glo_4 % 2
+t&49 = t&50 / 2
+push c
+push d
+push _a_4_b_d
+call test_1
+retvalue t&51
+t&48 = t&49 + t&51
+t&52 = 0 * 1
+t&53 = t&52 + 0
+t&54 = _a_4_b_d[t&53]
+push t&54
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&55
+t&47 = t&48 + t&55
+t&57 = 0 * 1
+t&58 = t&57 + 0
+t&59 = _a_4_b_d[t&58]
+push t&59
+push _a_4_b_d[0][1]
+push _a_4_b_d
+call test_1
+retvalue t&60
+t&56 = t&60 * 20
+t&46 = t&47 - t&56
+if t&46 == 0 then goto Jump5
+t&61 = glo_6 == glo_6
+if t&61 == 0 then goto Jump5
+GOTO Jump2
+        <JUMPDST Jump5>
+GOTO Loop1end
+        <JUMPDST Jump2>
+    <LABEL 7 start>
+t&62 = glo_2 > 1
+if t&62 == 0 then goto Jump9
+GOTO Jump8
+        <JUMPDST Jump9>
+GOTO Jump6
+        <JUMPDST Jump8>
+    <LABEL 8 start>
+t&63 = glo_2 - 1
+glo_2 = t&63
+t&64 = glo_9 - 1
+glo_9 = t&64
+GOTO Loop1begin
+    <LABEL 8 end>
+GOTO Jump7
+        <JUMPDST Jump6>
+    <LABEL 9 start>
+t&65 = glo_2 - 1
+glo_2 = t&65
+t&66 = glo_1 - 1
+glo_1 = t&66
+t&67 = glo_1 < 0
+if t&67 == 0 then goto Jump13
+GOTO Jump12
+        <JUMPDST Jump13>
+GOTO Jump10
+        <JUMPDST Jump12>
+    <LABEL 10 start>
+t&68 = glo_8 - 1
+glo_8 = t&68
+GOTO Loop1end
+    <LABEL 10 end>
+GOTO Jump11
+        <JUMPDST Jump10>
+    <LABEL 11 start>
+    <LABEL 11 end>
+        <JUMPDST Jump11>
+    <LABEL 9 end>
+        <JUMPDST Jump7>
+    <LABEL 7 end>
+GOTO Loop1begin
+        <JUMPDST Loop1end>
+print "19231076\n"
+print ">/!~varg1 is:"
+print glo_1
+print ";~\n"
+print ">/!~varg2 is:"
+print glo_2
+print ";~\n"
+print ">/!~varg3 is:"
+print glo_3
+print ";~\n"
+print ">/!~varg4 is:"
+print glo_4
+print ";~\n"
+print ">/!~varg5 is:"
+print glo_5
+print ";~\n"
+print ">/!~varg6 is:"
+print glo_6
+print ";~\n"
+print ">/!~varg7 is:"
+print glo_7
+print ";~\n"
+print ">/!~varg8 is:"
+print glo_8
+print ";~\n"
+print ">/!~varg9 is:"
+print glo_9
+print ";~\n"
+RET  0
+RET null
+    <LABEL 6 end>
+
+-----------------EXIT--------------
+
