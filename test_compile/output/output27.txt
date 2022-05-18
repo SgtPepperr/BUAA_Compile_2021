@@ -1,0 +1,12 @@
+MARS 4.5  Copyright 2003-2014 Pete Sanderson and Kenneth Vollmar
+
+19373315
+this is a yu ju ky
+unbelievable!
+var_a from getint() is 1
+getint is 1
+tmp
+tmp
+tmp
+tmp
+tmp

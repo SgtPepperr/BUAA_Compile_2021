@@ -1,0 +1,350 @@
+.data
+s_0: .asciiz "19231076\n"
+s_1: .asciiz ">/!~varg1 is:"
+s_2: .asciiz ";~\n"
+s_3: .asciiz ">/!~varg2 is:"
+s_4: .asciiz ";~\n"
+s_5: .asciiz ">/!~varg3 is:"
+s_6: .asciiz ";~\n"
+s_7: .asciiz ">/!~varg4 is:"
+s_8: .asciiz ";~\n"
+s_9: .asciiz ">/!~varg5 is:"
+s_10: .asciiz ";~\n"
+s_11: .asciiz ">/!~varg6 is:"
+s_12: .asciiz ";~\n"
+s_13: .asciiz ">/!~varg7 is:"
+s_14: .asciiz ";~\n"
+s_15: .asciiz ">/!~varg8 is:"
+s_16: .asciiz ";~\n"
+s_17: .asciiz ">/!~varg9 is:"
+s_18: .asciiz ";~\n"
+
+.text
+li $t0,1
+sw $t0,0($gp)
+li $t0,13
+sw $t0,4($gp)
+li $t0,5
+li $t1,0
+sll $t1,$t1,2
+add $t1,$t1,$gp
+sw $t0,8($t1)
+li $t0,0
+li $t1,0
+sll $t1,$t1,2
+add $t1,$t1,$gp
+sw $t0,12($t1)
+li $t0,12
+li $t1,1
+sll $t1,$t1,2
+add $t1,$t1,$gp
+sw $t0,12($t1)
+li $t0,0
+li $t1,0
+sll $t1,$t1,2
+add $t1,$t1,$gp
+sw $t0,28($t1)
+li $t0,12
+li $t1,1
+sll $t1,$t1,2
+add $t1,$t1,$gp
+sw $t0,28($t1)
+li $t0,1
+sw $t0,40($gp)
+j main
+
+test_1:
+li $t0,0
+sll $t0,$t0,2
+lw $t1,-4($fp)
+add $t1,$t1,$t0
+lw $t2,0($t1)
+move $t3,$t2
+lw $t0,0($fp)
+add $t4,$t0,$t3
+li $t0,0
+move $t5,$t0
+li $t1,0
+add $t6,$t5,$t1
+sll $t0,$t6,2
+lw $t1,-8($fp)
+add $t1,$t1,$t0
+lw $t2,0($t1)
+move $t7,$t2
+add $t8,$t4,$t7
+sw $t8,20($gp)
+jr $ra
+
+main:
+move $fp,$sp
+addi $sp,$sp,-984
+li $t0,1
+sw $t0,0($fp)
+li $t0,13
+sw $t0,-4($fp)
+li $t0,1
+li $t1,0
+sll $t1,$t1,2
+addu $t1,$t1,$fp
+sw $t0,-8($t1)
+li $t0,0
+li $t1,0
+sll $t1,$t1,2
+addu $t1,$t1,$fp
+sw $t0,-16($t1)
+li $t0,12
+li $t1,1
+sll $t1,$t1,2
+addu $t1,$t1,$fp
+sw $t0,-16($t1)
+li $t0,0
+li $t1,0
+sll $t1,$t1,2
+addu $t1,$t1,$fp
+sw $t0,-32($t1)
+li $t0,12
+li $t1,1
+sll $t1,$t1,2
+addu $t1,$t1,$fp
+sw $t0,-32($t1)
+li $t0,0
+move $t3,$t0
+li $t1,0
+add $t4,$t3,$t1
+sll $t0,$t4,2
+addu $t1,$t0,$fp
+lw $t2,-32($t1)
+move $t5,$t2
+li $t0,0
+add $t6,$t0,$t5
+li $t1,13
+mult $t6,$t1
+mflo $t7
+li $t1,1
+add $t8,$t7,$t1
+sw $t8,-36($fp)
+li $t0,1
+li $t1,0
+sll $t1,$t1,2
+addu $t1,$t1,$fp
+sw $t0,-24($t1)
+li $t0,0
+move $t9,$t0
+li $t1,0
+add $t3,$t9,$t1
+li $t0,1
+sll $t1,$t3,2
+addu $t1,$t1,$fp
+sw $t0,-32($t1)
+li $t0,0
+move $t4,$t0
+li $t1,0
+add $t5,$t4,$t1
+sll $t0,$t5,2
+addu $t1,$t0,$fp
+lw $t2,-32($t1)
+move $t6,$t2
+lw $t0,-36($fp)
+add $t7,$t0,$t6
+sw $t7,-20($fp)
+li $v0,5
+syscall
+sw $v0,44($gp)
+li $v0,5
+syscall
+sw $v0,48($gp)
+li $v0,5
+syscall
+sw $v0,52($gp)
+li $v0,5
+syscall
+sw $v0,56($gp)
+li $v0,5
+syscall
+sw $v0,60($gp)
+li $v0,5
+syscall
+sw $v0,64($gp)
+li $v0,5
+syscall
+sw $v0,68($gp)
+li $v0,5
+syscall
+sw $v0,72($gp)
+li $v0,5
+syscall
+sw $v0,76($gp)
+lw $t0,-20($fp)
+sw $t0,0($sp)
+addi $t0,$fp,-24
+sw $t0,-4($sp)
+addi $t0,$fp,-32
+sw $t0,-8($sp)
+addi $sp,$sp,-120
+sw $ra,4($sp)
+sw $fp,8($sp)
+addi $fp,$sp,120
+jal test_1
+lw $fp,8($sp)
+lw $ra,4($sp)
+addi $sp,$sp,120
+
+Loop1begin:
+lw $t0,76($gp)
+li $t1,0
+sgt $t8,$t0,$t1
+li $t1,0
+beq $t8,$t1,Jump3
+j Jump2
+
+Jump3:
+lw $t0,72($gp)
+li $t1,0
+sgt $t9,$t0,$t1
+li $t1,0
+beq $t9,$t1,Loop1end
+lw $t0,68($gp)
+li $t1,0
+sgt $t3,$t0,$t1
+li $t1,0
+beq $t3,$t1,Loop1end
+j Jump2
+
+Jump4:
+j Loop1end
+
+Jump2:
+lw $t0,48($gp)
+li $t1,2
+sgt $t4,$t0,$t1
+li $t1,0
+beq $t4,$t1,Jump5
+j Jump7
+
+Jump8:
+j Jump5
+
+Jump7:
+lw $t0,48($gp)
+li $t1,1
+sub $t5,$t0,$t1
+sw $t5,48($gp)
+j Loop1begin
+j Jump6
+
+Jump5:
+lw $t0,48($gp)
+li $t1,1
+sub $t3,$t0,$t1
+sw $t3,48($gp)
+lw $t0,44($gp)
+li $t1,1
+sub $t4,$t0,$t1
+sw $t4,44($gp)
+lw $t0,44($gp)
+li $t1,0
+slt $t5,$t0,$t1
+li $t1,0
+beq $t5,$t1,Jump9
+j Loop1end
+
+Jump11:
+j Jump9
+
+Jump10:
+j Loop1end
+
+Jump9:
+
+Jump6:
+j Loop1begin
+
+Loop1end:
+la $a0,s_0
+li $v0,4
+syscall
+la $a0,s_1
+li $v0,4
+syscall
+lw $a0,44($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_3
+li $v0,4
+syscall
+lw $a0,48($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_5
+li $v0,4
+syscall
+lw $a0,52($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_7
+li $v0,4
+syscall
+lw $a0,56($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_9
+li $v0,4
+syscall
+lw $a0,60($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_11
+li $v0,4
+syscall
+lw $a0,64($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_13
+li $v0,4
+syscall
+lw $a0,68($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_15
+li $v0,4
+syscall
+lw $a0,72($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+la $a0,s_17
+li $v0,4
+syscall
+lw $a0,76($gp)
+li $v0,1
+syscall
+la $a0,s_18
+li $v0,4
+syscall
+li $v0,10
+syscall
+li $v0,10
+syscall
